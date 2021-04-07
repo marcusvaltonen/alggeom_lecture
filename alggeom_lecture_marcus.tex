@@ -21,11 +21,14 @@
 \usepackage[font=footnotesize,labelfont=bf]{caption}
 \usepackage[font=footnotesize,labelfont=bf]{subcaption}
 \usepackage{hyphenat}
+\usepackage[inline]{enumitem}
 
 \usepackage{mathrsfs}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
 \newtheorem{prop}{Proposition}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
 
 % Math in header should be boldface
 \makeatletter
@@ -55,6 +58,7 @@
 \newcommand{\Z}{\ensuremath{\mathbbm{Z}}}
 \newcommand{\Q}{\ensuremath{\mathbbm{Q}}}
 \newcommand{\R}{\ensuremath{\mathbbm{R}}}
+\newcommand{\K}{\ensuremath{\mathbbm{K}}}
 \newcommand{\C}{\ensuremath{\mathbbm{C}}}
 
 \newcommand{\lr}{\ensuremath{\mathrm{\quad\Leftrightarrow\quad}}}
@@ -71,6 +75,7 @@
 \DeclareMathOperator{\nulldim}{nulldim}
 \DeclareMathOperator{\rank}{rank}
 \DeclareMathOperator{\lt}{LT}
+\DeclareMathOperator{\sat}{Sat}
 \newcommand{\Rop}[1]{\mathcal{R}_{#1}}
 
 \makeatletter
@@ -83,6 +88,7 @@
 \makeatother
 
 \usepackage{hyperref}
+\usepackage{cleveref}
 
 
 %----------------------------------------------------------------------------------------
@@ -108,7 +114,9 @@ accuracy, given a polynomial system of equations. In the first part we will brie
 throught the theory, and recommend further reading for self-study. Then, we will show
 how to apply this theory and how it affects the solver. In the latter part we will use the
 automatic solver by Larsson~\etal{}, which you should install and get accustomed to prior
-to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.
+to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
+Apart from the course literature, you are also referred to Viktor Larsson's PhD
+thesis~\cite{larsson-phd} for a deeper understanding of the content in this lecture.
 
 \section{Theory}
 \subsection{Recapitulation of the course contents}
@@ -195,14 +203,134 @@ Let us recapitulate: given a polynomial
 system of equations, use Buchberger's algorithm to obtain a Gröbner basis. Create the
 action matrix and compute the eigenvalues and eigenvectors to extract the solutions.
 
+\subsection{Elimination template}
+In practice we do not compute a Gröbner basis everytime we want to solve a polynomial system
+of equations. There are many reasons for this:
+\begin{enumerate*}[label={\roman*}]
+\item it is computationally expensive,
+\item due to floating point arithmetic, accumulated round-off errors may reduce performance,
+\item degeneracies for certain instances with real data.
+\end{enumerate*}
+
+Instead we try to find the action matrix using \emph{elimination templates}, which can
+be done offline.
+
 \subsection{Syzygy Modules}
+A module over a ring is a generalization of the notion of a vector space over a field; however,
+unlike vector spaces, most modules do not have bases. Consider the following example:
 
+\begin{example}
+The 
+\end{example}
 
+A submodule
 
+\begin{example}
+An ideal is a submodule
+\end{example}
+
+A \emph{free} module is a module that has a basis, and therefore behave much like vector spaces.
+
+We will
+\begin{definition}
+Blah
+\end{definition}
+There for the syzygy module is the analogue of the null space in vector spaces as it is the kernel
+of the map. The ambiguity of the choice of polynomials is therefore captured, and
 
 \subsection{Saturation of an ideal}
-\subsection{The Hidden variable trick}
+Consider the following definition:
+\begin{definition}
+The \emph{saturation} of an ideal~$I\subset\K[x]$ \wrt{} the polynomial $f_s\in\K[x]$ is
+defined as
+\begin{equation}
+    \sat(I,\, f_s) \coloneqq \{p\;|\;\exists N\geq 0,\, f_s^N p\in I  \}\;.
+\end{equation}
+\end{definition}
+Consider the ideal $I=(x^2+xy,\, )\subset\C[x,\,y]$.
+
+
+\subsection{The hidden variable trick}
+In certain cases, you may have a linear relationship in one or more variables in your system.
+We can then use the~\emph{hidden variable trick}, to eliminate these variables,
+leaving a simplified system. We illustrate this in the following example from computer vision.
+
+\begin{example}\label{ex:hidden1}
+Consider the relative pose problem with known rotation and calibrated cameras.
+In this case the essential matrix is $\mat{E} = [\mat{t}]_\times$. The epipolar constraint
+for a pair of corresponding points $\mat{x}_i\leftrightarrow\mat{x}_i'$,
+is given by $\mat{x}'^T\mat{E}\mat{x}=0$. Since the translation vector~$\mat{t}\in\R^3$,
+we have two degrees of freedom (due to the scale ambiguity), and therefore we require at least
+two point correspondences in order to solve the problem. The minimal problem is therefore
+\begin{equation}
+\begin{aligned}
+    \mat{x}_1'^T\mat{E}\mat{x}_1 &= 0, \\
+    \mat{x}_2'^T\mat{E}\mat{x}_2 &= 0\;.
+\end{aligned}
+\end{equation}
+Since these equations are linear in $\mat{t}$ they can be written as
+\begin{equation}
+    \mat{Mt} = \mat{0},
+\end{equation}
+where
+\begin{equation}
+\mat{M} = \begin{bmatrix}
+    (\mat{x}_1\times\mat{x}_1')^\T \\
+    (\mat{x}_2\times\mat{x}_2')^\T
+\end{bmatrix}\;.
+\end{equation}
+The problem is therefore reduced to finding the null space of the $2\times 3$ matrix~$\mat{M}$.
+In this case it can be done explicitly using elementary operations
+\begin{equation}\label{eq:2pt_optimal}
+    \mat{t} = (\mat{x}_1\times\mat{x}_1') \times (\mat{x}_2\times\mat{x}_2')\;.
+\end{equation}
+\end{example}
+
+It is not always the case were we get the solution directly.
+Consider the following system
+
+Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
+Consider this example
+\begin{example}
+Consider the following system
+\begin{equation}
+\begin{aligned}
+2x + 3yz + z + z^2 &= 0, \\
+3x + 2yz + 2z - z^y &= 0\;.
+\end{aligned}
+\end{equation}
+Since the system is linear in $x$ and $y$ it can be rewritten as
+\begin{equation}
+\begin{bmatrix}
+ 2  & 3z & z + z^2 \\
+ 3  & 2z & 2z - z^2
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix}
+= 0\;.
+\end{equation}
+\end{example}
+
+Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
+Consider this modification of~\cref{ex:hidden1}.
+\begin{example}
+
+Consider the relative pose problem with known rotation and partially calibrated cameras,
+where the only unknown intrinsic parameter is the focal length. The calibration matrix
+$\mat{K} = \diag(f,\,f,\,1)$, where~$f>0$.
+In this case the fundamental matrix is $\mat{F} = \mat{K}^{-1}[\mat{t}]_\times\mat{K}^{-1}$.
+% Note that, $\mat{K}^{-1} = \diag(f^{-1},\,f^{-1},\,1)$, 
+We have now three degrees of freedom (one more than last time, since we added~$f$).
+
+
+\end{example}
+
+
 \subsection{Eliminating variables}
+
 \subsection{Beyond Gröbner bases}
 
 \section{Applications}
@@ -211,6 +339,7 @@ action matrix and compute the eigenvalues and eigenvectors to extract the soluti
 Comparison to \emph{Rabinowitsch trick}.
 \subsection{The hidden variable trick}
 \subsection{Eliminating variables}
+\subsection{A clever elimination strategy}
 \subsection{Beyond Gröbner bases}
 
 \bibliographystyle{apalike}
