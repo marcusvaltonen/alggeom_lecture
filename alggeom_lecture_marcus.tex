@@ -27,9 +27,16 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
 \newtheorem{prop}{Proposition}
+\theoremstyle{definition}
 \newtheorem{example}{Example}
 \newtheorem{definition}{Definition}
 
+% vast and Vast brackets (larger than Huge)
+\makeatletter
+\newcommand{\HUGE}{\bBigg@{3}}
+\newcommand{\vast}{\bBigg@{4}}
+\newcommand{\Vast}{\bBigg@{5}}
+\makeatother
 % Math in header should be boldface
 \makeatletter
 \g@addto@macro\bfseries{\boldmath}
@@ -88,7 +95,7 @@
 \makeatother
 
 \usepackage{hyperref}
-\usepackage{cleveref}
+\usepackage[capitalise]{cleveref}
 
 
 %----------------------------------------------------------------------------------------
@@ -109,14 +116,19 @@
 \maketitle % Print the title
 
 \section{Introduction}
-In this lecture we will discuss how to optimize the computations, both for speed and
-accuracy, given a polynomial system of equations. In the first part we will briefly go
-throught the theory, and recommend further reading for self-study. Then, we will show
-how to apply this theory and how it affects the solver. In the latter part we will use the
+In this lecture, we will discuss how to optimize the computations, both for speed and
+accuracy, given a polynomial system of equations with generic coefficients. Such problems are very
+frequent in computer vision, and many of the examples will be from this field of research.
+I will mostly rely on examples; however,
+the necessary theory is briefly discussed in this document, which you are encourage to read before
+the lecture. The theory is not meant to be complete, and I will refer you to other sources for
+each topic, and try to list actual publications using the particular method.
+
+For the practical part we will use the
 automatic solver by Larsson~\etal{}, which you should install and get accustomed to prior
 to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
 Apart from the course literature, you are also referred to Viktor Larsson's PhD
-thesis~\cite{larsson-phd} for a deeper understanding of the content in this lecture.
+thesis for a deeper understanding of the content in this lecture.
 
 \section{Theory}
 \subsection{Recapitulation of the course contents}
@@ -249,10 +261,15 @@ defined as
 \end{definition}
 Consider the ideal $I=(x^2+xy,\, )\subset\C[x,\,y]$.
 
+This is~\cite{larsson2017iccv}.
+Comparison to \emph{Rabinowitsch trick}.
+
+\subsection{Using symmetries}
+Blahh
 
 \subsection{The hidden variable trick}
 In certain cases, you may have a linear relationship in one or more variables in your system.
-We can then use the~\emph{hidden variable trick}, to eliminate these variables,
+We can then use the~\emph{hidden variable trick} to eliminate these variables,
 leaving a simplified system. We illustrate this in the following example from computer vision.
 
 \begin{example}\label{ex:hidden1}
@@ -287,11 +304,13 @@ In this case it can be done explicitly using elementary operations
 \end{example}
 
 It is not always the case where we get the solution directly.
-Consider the following system
+You might end up with a polynomial in a single variable, in which case a
+simpler root finding method can be used, \eg{} by computing the eigenvalues
+of the corresponding~\emph{companion matrix}, or---if the degree of the polynomial is
+less than or equal to four---a closed-form solution can be obtained. We illustrate
+the latter in the following example:
 
-Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
-Consider this example
-\begin{example}
+\begin{example}\label{ex:hidden2}
 Consider the following system
 \begin{equation}
 \begin{aligned}
@@ -300,10 +319,11 @@ m_{22}xz + m_{22}x + m_{23}yz + m_{24}y + m_{25}z^2 + m_{26}z &= 0, \\
 \end{aligned}
 \end{equation}
 where~$m_{ij}\in\C$ are generic coefficients.
-By looking at a specific instance we can use Macaulay2 to show that there are in
-general four solutions to this problem; however,
-since the system is linear in $x$ and $y$ it can be rewritten as
-\begin{equation}
+By looking at a specific (non-degenerate) instance using Macaulay2
+(or by using the~\emph{mixed cell method}) we see that there are in
+general four solutions to this problem. One could use the action matrix method to construct an
+elimination template; however, since the system is linear in $x$ and $y$ it can be rewritten as
+\begin{equation}\label{eq:specialnullvector}
 \mat{M}(z)
 \begin{bmatrix}
 x \\
@@ -322,9 +342,9 @@ where
 \end{bmatrix}\;.
 \end{equation}
 In conclusion, we seek the one-dimensional nullspace of~$\mat{M}(z)$. Specifically, we want
-the normalized nullvector with last element equal to one. This means that $\mat{M}(z)$ must
+the normalized null vector with last element equal to one. This means that $\mat{M}(z)$ must
 be rank deficient and therefore $\det(\mat{M}(z))=0$. Computing this gives us a
-quartic polynomial in~$z$.
+quartic polynomial in~$z$
 \begin{equation}
     \det(\mat{M}(z)) =
     \alpha_4 z^4 +
@@ -341,33 +361,136 @@ on $\mat{M}(z^*)$, for a solution $z^*$, and normalize the corresponding null ve
 last element equal to one.
 \end{example}
 
-Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
-Consider this modification of~\cref{ex:hidden1}.
+In the following example, which is a modification of~\cref{ex:hidden1}, we show how that
+the hidden variable trick can be used to reduce the number of parameters, but still
+apply the action matrix method to the resulting system.
+
 \begin{example}
-
-Consider the relative pose problem with known rotation and partially calibrated cameras,
-where the only unknown intrinsic parameter is the focal length. The calibration matrix
-$\mat{K} = \diag(f,\,f,\,1)$, where~$f>0$.
-In this case the fundamental matrix is $\mat{F} = \mat{K}^{-1}[\mat{t}]_\times\mat{K}^{-1}$.
-% Note that, $\mat{K}^{-1} = \diag(f^{-1},\,f^{-1},\,1)$, 
-We have now three degrees of freedom (one more than last time, since we added~$f$).
-
-
+Consider the relative pose problem with known rotation but unknown and equal focal length and radial distortion.
+Assume that the optical center and the distortion center coincide, and choose the local
+coordinate system such that this point is at the origin. To correct for radial distortion we use
+the one-parameter~\emph{division model}~\cite{fitzgibbon2001}, \ie{} the distorted
+image points~$\mat{x}_d=(x,\,y,\,1)^\T$ are assumed to be mapped to their rectified counterpart~$\mat{x}_u$
+using the following parametric relation
+\begin{equation}
+    \mat{x}_u = \phi(\mat{x}_d,\,\lambda) =
+    \begin{bmatrix}
+        x \\
+        y \\
+        1 + \lambda(x^2+y^2)
+    \end{bmatrix}\;.
+\end{equation}
+Furthermore, the calibration matrix~$\mat{K}$ is
+\begin{equation}
+    \mat{K} = \begin{bmatrix}
+    f\\ & f\\ && 1
+    \end{bmatrix}, \qquad f > 0.
+\end{equation}
+In this case, the fundamental matrix is $\mat{F} = \mat{K}^{-1}[\mat{t}]_\times\mat{K}^{-1}$
+and the epipolar constraint is~$\mat{x}_i'^\T\mat{Fx}_i = 0$ for two corresponding
+points~$\mat{x}_i\leftrightarrow\mat{x}_i'$. Note that~$\mat{K}^{-1}$ contains $f^{-1}$ and
+to make the equations polynomial we multiply each equation with~$f^2$. Furthermore, there
+are four degrees of freedom (three translational parameters, the focal length and the radial
+distortion coefficient, but the scale ambiguity is present); hence, the problem is minimal using four point correspondences.
+More specifically, we want to solve
+\begin{equation}
+    f^2\cdot \phi(\mat{x}_i',\,\lambda)^\T \mat{F} \phi(\mat{x}_i,\,\lambda) = 0, \qquad \te{for }i=1,\ldots 4.
+\end{equation}
+Again, the equations are linear in~$\mat{t}$ and therefore we may consider the
+system
+\begin{equation}
+\mat{M}(f,\,\lambda)\mat{t} = 0\;.
+\end{equation}
+Here the matrix~$\mat{M}$ is of size $4\times 3$, and must be rank deficient to allow a non-trivial
+null vector. Therefore, all $3\times 3$ minors~$\mat{M}_i$ must vanish\footnote{A
+$k\times k$ \emph{minor} of a matrix~$\mat{A}$ of size $m\times n$ is the determinant of a $k\times k$ matrix obtained by removing $m-k$ rows and $n-k$ columns.}, \ie{}
+\begin{equation}
+    \mat{M}_i(f,\,\lambda) = 0,  \qquad \te{for }i=1,\ldots 4.
+\end{equation}
+We now have a polynomial system with four equations and two unknowns (instead of four unknowns).
 \end{example}
 
+Sometimes it is beneficial (or even necessary) to involve saturation in the process.
+In practice, this is often the case when you need to enforce a special structure to the
+null vector, \cf{}~\cref{ex:hidden2}. In~\cref{eq:specialnullvector} we need the last
+element to be equal to one; however, this condition is lost when only enforcing the minors
+to vanish. It can happen that a one-dimensional family of false solutions is introduces corresponding
+to null vectors where the last element is zero.
+By using saturation, one may exclude such solutions. For practical scenarios where this is done
+see~\cite{pritts2017,valtonenoernhag-etal-wacv-2021}.
 
 \subsection{Eliminating variables}
+Sometimes we are able to eliminate variables even if there are no linear relationship. This
+has been used by several authors~\cite{kukelova-etal-cviu-2010,fraundorfer-etal-eccv-2010,jiang-etal-accv-2014,kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}.
+Consider the following toy example
+\begin{example}
+Assume we have four unknowns $x$, $y$, $z$ and $w$, where $x^2+y^2=1$. We seek to solve
+\begin{equation}
+\mat{M}\mat{v} = 0,
+\end{equation}
+where $\mat{M}\in\C^{3\times 9}$ is a coefficient matrix and the monomial vector is
+\setcounter{MaxMatrixCols}{20}
+\begin{equation}
+\mat{v} = \begin{bmatrix}
+        xw & x &
+        yw & y &
+        z^2 & zw^2 & zw &
+         w & 1
+    \end{bmatrix}^\T\;.
+\end{equation}
+Due to the constraint~$x^2+y^2=1$ we cannot use the hidden variable trick. But, we can still
+eliminate $z$ by using Gauss--Jordan elimination. The corresponding system, after elimination, is on the form
+\begin{equation}
+\raisebox{-6pt}{ $\hat{\mat{M}} =$ }
+\raisebox{-6pt}{\vast[}
+\begingroup % keep the change local
+\setlength\arraycolsep{2pt}
+\begin{matrix}
+%xw & x & yw & y & z^2 & zw^2 & zw & w & 1\\
+z^2 & zw^2 & zw & xw & x & yw & y & w & 1\\
+    1 & & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
+    & 1 & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
+    & & 1 & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet &
+\end{matrix}
+\endgroup
+\raisebox{-6pt}{\vast]\;.}
+\end{equation}
+From the above system we may introduce the functions~$g_i$, such that
+\begin{equation}\label{paper04:eq:elim}
+    \begin{aligned}
+    z^2 + g_1(x,y,w)  &=  0,\\
+    zw^2 + g_2(x,y,w)  &=  0,\\
+    zw + g_3(x,y,w)  &=  0,\\
+    \end{aligned}
+\end{equation}
+where $g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
+Furthermore, we must enforce the relations
+\begin{equation}\label{paper04:eq:knowntilt1}
+\begin{aligned}
+    g_2(x,y,w) &= w g_3(x,y,w), \\
+    w g_1(x,y,w) &= z g_3(x,y,w)\;.
+\end{aligned}
+\end{equation}
+Now, we have a reduced system with three unknowns and three equations given
+by~\eqref{paper04:eq:knowntilt1} and the constraint $x^2+y^2=1$.
+We will return to this problem during the lecture.
 
-\subsection{Beyond Gröbner bases}
+\iffalse
+It turns out that~\eqref{paper04:eq:knowntilt1} are cubic and~\eqref{paper04:eq:knowntilt2} are quartic, and
+by analyzing the dimension of the corresponding quotient ring, we find that
+the system has six solutions in total (it can be verified that the original system has six
+solutions as well). Using~\cite{larsson2018cvprb} an elimination template of size~$18\times 24$
+was constructed.
+\fi
+\end{example}
 
-\section{Applications}
-\subsection{Syzygies}
-\subsection{Saturation of an ideal}
-Comparison to \emph{Rabinowitsch trick}.
-\subsection{The hidden variable trick}
-\subsection{Eliminating variables}
 \subsection{A clever elimination strategy}
+This section is based on~\cite{kukelova-etal-2017-cvpr}.
+Practical examples: \cite{ding-etal-2019-iccv,valtonenoernhag-icpram-2019}
+
 \subsection{Beyond Gröbner bases}
+This section is based on~\cite{larsson2018cvpr}.
+Practical examples~\cite{valtonenoernhag-springer-2021}
 
 \bibliographystyle{apalike}
 {\small
