@@ -286,7 +286,7 @@ In this case it can be done explicitly using elementary operations
 \end{equation}
 \end{example}
 
-It is not always the case were we get the solution directly.
+It is not always the case where we get the solution directly.
 Consider the following system
 
 Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
@@ -295,16 +295,16 @@ Consider this example
 Consider the following system
 \begin{equation}
 \begin{aligned}
-2x + 3yz + z + z^2 &= 0, \\
-3x + 2yz + 2z - z^y &= 0\;.
+m_{11}xz + m_{12}x + m_{13}yz + m_{14}y + m_{15}z^2 + m_{16}z &= 0, \\
+m_{22}xz + m_{22}x + m_{23}yz + m_{24}y + m_{25}z^2 + m_{26}z &= 0, \\
 \end{aligned}
 \end{equation}
-Since the system is linear in $x$ and $y$ it can be rewritten as
+where~$m_{ij}\in\C$ are generic coefficients.
+By looking at a specific instance we can use Macaulay2 to show that there are in
+general four solutions to this problem; however,
+since the system is linear in $x$ and $y$ it can be rewritten as
 \begin{equation}
-\begin{bmatrix}
- 2  & 3z & z + z^2 \\
- 3  & 2z & 2z - z^2
-\end{bmatrix}
+\mat{M}(z)
 \begin{bmatrix}
 x \\
 y \\
@@ -312,6 +312,33 @@ y \\
 \end{bmatrix}
 = 0\;.
 \end{equation}
+where
+\begin{equation}
+\mat{M}(z)=
+\begin{bmatrix}
+    m_{11}z + m_{12} & m_{13}z + m_{14} & m_{15}z^2 + m_{16}z \\
+    m_{22}z + m_{22} & m_{23}z + m_{24} & m_{25}z^2 + m_{26}z \\
+    m_{32}z + m_{32} & m_{33}z + m_{34} & m_{35}z^2 + m_{36}z
+\end{bmatrix}\;.
+\end{equation}
+In conclusion, we seek the one-dimensional nullspace of~$\mat{M}(z)$. Specifically, we want
+the normalized nullvector with last element equal to one. This means that $\mat{M}(z)$ must
+be rank deficient and therefore $\det(\mat{M}(z))=0$. Computing this gives us a
+quartic polynomial in~$z$.
+\begin{equation}
+    \det(\mat{M}(z)) =
+    \alpha_4 z^4 +
+    \alpha_3 z^3 +
+    \alpha_2 z^2 +
+    \alpha_1 z +
+    \alpha_0 = 0,
+\end{equation}
+where $\alpha_i\in\C$ only depend on~$m_{ij}$. Specifically, we have reduced the problem to
+finding the roots of a quartic polynomial which has a closed-form solution, and is fast to compute.
+We do not need to resolve to other more complex methods such as the action matrix method.
+When the solutions to $z$ are found, we can extract $x$ and $y$ linearly, \eg{} by using SVD
+on $\mat{M}(z^*)$, for a solution $z^*$, and normalize the corresponding null vector to have
+last element equal to one.
 \end{example}
 
 Sometimes it is beneficiant (or even necessary) to involve saturation in the process.
