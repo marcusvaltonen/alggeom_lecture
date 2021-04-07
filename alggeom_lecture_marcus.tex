@@ -1,0 +1,220 @@
+% !TEX encoding = UTF-8 Unicode
+
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[sc]{mathpazo}
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage{geometry}
+\usepackage[pdftex]{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{epstopdf}
+
+\usepackage[font=footnotesize,labelfont=bf]{caption}
+\usepackage[font=footnotesize,labelfont=bf]{subcaption}
+\usepackage{hyphenat}
+
+\usepackage{mathrsfs}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{prop}{Proposition}
+
+% Math in header should be boldface
+\makeatletter
+\g@addto@macro\bfseries{\boldmath}
+\makeatother
+
+% My own commands
+\usepackage{gensymb} % degree sign
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+
+\newcommand{\fr}[2]{\frac{#1}{#2}}
+\newcommand{\pf}[2]{\dfrac{\partial #1}{\partial #2}}
+\newcommand{\cd}{\cdot}
+% \newcommand{\T}{\!\mathsf{T}}
+\newcommand{\T}{T}
+\newcommand{\te}[1]{\text{#1}}
+\newcommand{\id}{\mathrm{d}}
+\usepackage{bm}
+\newcommand{\mat}[1]{\bm{#1}}
+\newcommand{\nullspace}[1]{\mathcal{N}{#1}}
+\newcommand{\lagrange}[1]{\mathcal{L}{#1}}
+\usepackage{mathtools}
+
+\usepackage{bbm}
+\newcommand{\N}{\ensuremath{\mathbbm{N}}}
+\newcommand{\Z}{\ensuremath{\mathbbm{Z}}}
+\newcommand{\Q}{\ensuremath{\mathbbm{Q}}}
+\newcommand{\R}{\ensuremath{\mathbbm{R}}}
+\newcommand{\C}{\ensuremath{\mathbbm{C}}}
+
+\newcommand{\lr}{\ensuremath{\mathrm{\quad\Leftrightarrow\quad}}}
+\newcommand{\ra}{\ensuremath{\mathrm{\quad\Rightarrow\quad}}}
+\newcommand{\lra}{\ensuremath{\mathrm{\longrightarrow}}}
+\newcommand{\f}[3]{#1\,:\,#2\,\lra\,#3}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\atan}{atan2}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\adj}{adj}
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator{\nulldim}{nulldim}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\lt}{LT}
+\newcommand{\Rop}[1]{\mathcal{R}_{#1}}
+
+\makeatletter
+\DeclareRobustCommand\eg{\emph{e.g}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\etal{\emph{et~al}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\ie{\emph{i.e}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\cf{\emph{cf}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\NB{\emph{N.B}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\wrt{w.r.t\@ifnextchar.{}{.\@}}
+\makeatother
+
+\usepackage{hyperref}
+
+
+%----------------------------------------------------------------------------------------
+%   TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{
+\normalfont \normalsize
+\textsc{Lund University --- Algebraic Geometry} \\ [7pt]
+\Large Practical aspects of solving a system of polynomial equations \\
+}
+\author{Marcus Valtonen \"{O}rnhag} % Your name
+
+\date{\normalsize\today} % Today's date or a custom date
+
+\begin{document}
+
+\maketitle % Print the title
+
+\section{Introduction}
+In this lecture we will discuss how to optimize the computations, both for speed and
+accuracy, given a polynomial system of equations. In the first part we will briefly go
+throught the theory, and recommend further reading for self-study. Then, we will show
+how to apply this theory and how it affects the solver. In the latter part we will use the
+automatic solver by Larsson~\etal{}, which you should install and get accustomed to prior
+to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.
+
+\section{Theory}
+\subsection{Recapitulation of the course contents}
+Using multi-index notation,
+let~$\mat{x^{\alpha}}$ denote a \emph{monomial} of degree $|\mat{\alpha}|$.
+Our main goal is to solve a polynomial system of equations
+\begin{equation}\label{kappa:eq:polsys}
+    \begin{aligned}
+    f_1(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    f_s(\mat{x}) & = 0,
+    \end{aligned}
+\end{equation}
+where each polynomial equation can be expressed
+as~$f=\sum_{\mat{\alpha}}c_{\mat{\alpha}}\mat{x^\alpha}$.
+The set of all solutions to~\eqref{kappa:eq:polsys} is called an \emph{affine variety}, and is denoted
+$\mat{V}(f_1,\ldots,f_s)\subset\C$.
+Let~$\C[\mat{x}]$ denote the set
+of polynomials in~$\mat{x}$ with coefficients in $\C$.
+An \emph{ideal} $I\subset\C[\mat{x}]$ is an additive group satisfying the \emph{absorption property},~\ie{}~if~$f\in I$
+and $h\in\C[\mat{x}]$ then $hf\in I$. Moreover, given a set of polynomials $f_1,\ldots,f_s\in\C[\mat{x}]$
+we consider the ideal
+\begin{equation}
+\langle f_1,\ldots,f_s\rangle = \left\{\sum_{i=1}^sh_if_i\;:\;h_1,\ldots,h_s\in\C[\mat{x}]\right\},
+\end{equation}
+which we will refer to as the \emph{ideal generated by} $f_1,\ldots,f_s$.
+The \emph{Hilbert Basis Theorem} states that every ideal of $\C[\mat{x}]$ is
+finitely generated, \ie{} given an ideal~$I\subset\C[\mat{x}]$ there exist
+$f_1,\ldots,f_s\in\C[\mat{x}]$ such that $I=\langle f_1,\ldots,f_s\rangle$.
+Thus, the polynomial system of equations~\eqref{kappa:eq:polsys} is defined by the
+generated ideal; however, the basis is in general not unique.
+
+To be able to represent the system of equations uniquely, one must impose
+a \emph{monomial ordering}, \eg{} the lexicographic order,
+the graded lex order or the graded reverse lex order. Regardless of which monomial ordering
+is chosen the \emph{leading term} (\wrt{}~the monomial ordering) is uniquely defined, and we shall
+denote it $\lt(f)$. Furthermore, for an ideal $I$ define $\lt(I)\coloneqq\{\lt(f)\;:\;f\in I\}$. Then
+a finite subset \mbox{$\mat{G}=\{g_1,\ldots,g_t\}\subset I$} is a \emph{Gröbner basis}
+if $\langle\lt(g_1),\ldots,\lt(g_t)\rangle=\lt(I)$.
+
+After this exposition one may ask: how does this relate to solving polynomial systems
+of equations? The answer lies in the fact that we have efficient ways of computing
+a Gröbner basis, by means of \emph{Buchberger's algorithm}.
+For more details regarding the algorithm, and to get a deeper understanding of the subject,
+the work of Cox~\etal{}~\cite{cox,cox2} is highly recommended.
+
+\subsection{The action matrix method}\label{kappa:sec:actionmatrix}
+Let us return to the polynomial system of equations~\eqref{kappa:eq:polsys}. Under the
+assumption that the system has finitely many solutions, \ie{} when $\mat{V}(I)$ is finite,
+it follows by the Finiteness Theorem (see \eg{}~\cite{cox2}) that $I$ is
+zero-dimensional and the quotient space~\mbox{$A=\C[\mat{x}]/I$} is
+finite dimensional. Given the \emph{coset}~$[f] = \{f+h\;:\;h\in I\}$,
+consider the operator~\mbox{$T_f\::\:A\longrightarrow A$}, defined by~$T_f([g])=[fg]$.
+It is easily seen that~$T_f$ is
+linear with the property that~$T_f=T_g$ if and only if~$f-g\in I$.
+Since the quotient space~$A$ is finite-dimensional this operation can be
+represented by a matrix~$\mat{M}_f$, which is known as the \emph{action matrix}.
+Furthermore, we may select a basis for~$A$,~\eg{} a monomial
+basis~$\mathcal{B}=\{[\mat{x}^{\alpha_j}]\}_{j\in J}$,
+typically obtained by (an improved version of)
+Buchberger's algorithm.
+When the action matrix~$\mat{M}_f=(m_{ij})$ acts on the basis elements we obtain a
+linear combination of the monomials forming the basis, namely
+\begin{equation}
+    T_f([\mat{x}^{\alpha_j}]) = [f\mat{x}^{\alpha_j}]=\sum_{i\in J}m_{ij}[\mat{x}^{\alpha_i}]\;.
+\end{equation}
+This implies that,
+% for some $h\in I$
+% \begin{equation}
+%     f\mat{x}^{\alpha_j}=\sum_{i\in J}m_{ij}\mat{x}^{\alpha_i},
+% \end{equation}
+% and
+for $\mat{x}\in V(I)$,
+\begin{equation}\label{kappa:eq:action}
+f(\mat{x})\mat{x}^{\alpha_j}=\sum_{i\in J}m_{ij}\mat{x}^{\alpha_i}\;.
+\end{equation}
+By representing the basis~$\mathcal{B}$ with a vector $\mat{b}$, and using the fact
+that~\eqref{kappa:eq:action} must hold for all basis elements, the problem can be reduced to
+\begin{equation}
+f(\mat{x})\mat{b}(\mat{x}) = \mat{M}_f^{\T}\mat{b}(\mat{x}),
+\end{equation}
+which we recognise as an eigenvalue problem.
+Let us recapitulate: given a polynomial
+system of equations, use Buchberger's algorithm to obtain a Gröbner basis. Create the
+action matrix and compute the eigenvalues and eigenvectors to extract the solutions.
+
+\subsection{Syzygy Modules}
+
+
+
+
+\subsection{Saturation of an ideal}
+\subsection{The Hidden variable trick}
+\subsection{Eliminating variables}
+\subsection{Beyond Gröbner bases}
+
+\section{Applications}
+\subsection{Syzygies}
+\subsection{Saturation of an ideal}
+Comparison to \emph{Rabinowitsch trick}.
+\subsection{The hidden variable trick}
+\subsection{Eliminating variables}
+\subsection{Beyond Gröbner bases}
+
+\bibliographystyle{apalike}
+{\small
+\bibliography{alggeom_lecture_marcus}}
+
+ \end{document}
