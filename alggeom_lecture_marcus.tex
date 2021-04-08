@@ -267,6 +267,9 @@ Comparison to \emph{Rabinowitsch trick}.
 \subsection{Using symmetries}
 Blahh
 
+\subsection{The importance of parameterization}
+Blahh
+
 \subsection{The hidden variable trick}
 In certain cases, you may have a linear relationship in one or more variables in your system.
 We can then use the~\emph{hidden variable trick} to eliminate these variables,
@@ -431,18 +434,19 @@ Assume we have four unknowns $x$, $y$, $z$ and $w$, where $x^2+y^2=1$. We seek t
 where $\mat{M}\in\C^{3\times 9}$ is a coefficient matrix and the monomial vector is
 \setcounter{MaxMatrixCols}{20}
 \begin{equation}
-\mat{v} = \begin{bmatrix}
-        xw & x &
-        yw & y &
-        z^2 & zw^2 & z &
-         w & 1
-    \end{bmatrix}^\T\;.
+    \mat{v} = \begin{bmatrix}
+            xw & x &
+            yw & y &
+            z^2 & zw^2 & z &
+            w & 1
+        \end{bmatrix}^\T\;.
 \end{equation}
 Due to the constraint~$x^2+y^2=1$ we cannot use the hidden variable trick. But, we can still
-eliminate $z$ by using Gauss--Jordan elimination. The corresponding system, after elimination, is on the form
+eliminate $z$ by using Gauss--Jordan elimination. The corresponding system, after elimination, is
+on the form
 \begin{equation}
 \raisebox{-6pt}{ $\hat{\mat{M}} =$ }
-\raisebox{-6pt}{\vast[}
+\raisebox{-6pt}{\HUGE[}
 \begingroup % keep the change local
 \setlength\arraycolsep{2pt}
 \begin{matrix}
@@ -453,9 +457,9 @@ z^2 & zw^2 & z & xw & x & yw & y & w & 1\\
     & & 1 & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet &
 \end{matrix}
 \endgroup
-\raisebox{-6pt}{\vast]\;.}
+\raisebox{-6pt}{\HUGE]\;.}
 \end{equation}
-From the above system we see the following relations
+From the above system, we note the following relations
 \begin{equation}\label{paper04:eq:elim}
     \begin{aligned}
     z^2 + g_1(x,y,w)  &=  0,\\
@@ -463,7 +467,7 @@ From the above system we see the following relations
     z + g_3(x,y,w)  &=  0,\\
     \end{aligned}
 \end{equation}
-where $g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
+where~$g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
 Consequently, we must enforce the relations
 \begin{equation}\label{paper04:eq:knowntilt1}
 \begin{aligned}
@@ -485,20 +489,75 @@ was constructed.
 \end{example}
 
 \subsection{A clever elimination strategy}
-This section is based on~\cite{kukelova-etal-2017-cvpr} and
-we use the example of relative pose with unknown focal length. This is minimal with six
-point correspondences.
+This section is based on~\cite{kukelova-etal-2017-cvpr}. We reproduce some of the material
+here verbatim:
 
-Practical examples: \cite{ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
+\begin{quote}
+In computer vision, we often encounter polynomial systems in which only the linear equations~$F_L$
+depend on image measurements, while the nonlinear equations~$F_N$ stay the same, regardless of
+image measurements. For example, the epipolar constraint generates linear equations that depend
+on the input measurements while the singularity of the fundamental matrix results in the non-linear
+equation~$\det(F) = 0$, which does not depend on the measurements. Here we present a new ``clever''
+elimination strategy, which usually allows us to do more computation in the off-line stage and less
+computation in the on-line stage.
+Throughout this section we assume that the nonlinear equations~$F_N$ do not depend on image
+measurements, \ie{} for all instances these equations are the same.
+[\ldots]
+%Later, in Sec-tion3.3, we will show how to deal with problems whenFNcontains equations that depend on image measurements. 
+Let us now describe our new elimination strategy. We first divide the input equations~$F$ into the
+linear equations~$F_L$ and the non-linear equations~$F_N$. Moreover, we divide the $n$ given unknowns
+$X$ into two subsets:
+\begin{equation}
+    \begin{aligned}
+        X_L &= \{x_i\in X\;|\;x_i\text{ appears in some }f\in F_L\}\\
+        X_N &= X\setminus X_L.
+    \end{aligned}
+\end{equation}
+The setXLcontains the unknowns that appear in linearequations. The setXNcontains the unknowns that appearin equations of higher degree only. We fix the following no-tation:|FL|=mL,|FN|=mN,|XL|=nL,|XN|=nN,which means thatm=mL+mNandn=nL+nN.
+% Now, the idea of our new elimination method is to elim-inate all unknownsXNfrom non-linear equationsFN. Thenon-linear equationsFNdo not depend on image measure-ments, and are the same for all instance of a given problem.Therefore, we can perform this elimination off-line, in thepre-processing step. This elimination may be computation-ally demanding. However, since we do this only once in thepre-processing step, it is not an issue during the solver runtime. Next, we further eliminatemLunknowns fromXLusingmLlinear equations fromFL. This is done on-linebut it is fast since solving a small linear system is easy.
+In more detail, our method performs the following steps.
+\paragraph{Offline:}
+\begin{enumerate}
+    \item Let $I = \langle F_N \rangle$ and consider the elimination
+    ideal~$I_{X_L}=I\cap \C[X_L]$
+    \item Compute the generators $G$ of $I_{X_L}$. These contain unknowns from $X_L$ only, \ie{}
+    the unknowns appearing in the linear equations $F_L$.
+\end{enumerate}
+\paragraph{Online:}
+\begin{enumerate}[resume]
+    \item Rewrite the linear equations $F_L$ in the unknowns $X_L$ as $\mat{M}X_L= 0$, where $\mat{M}$
+    is a coefficient matrix and the vector $X_L$ contains all unknowns from $X_L$.
+    \item Compute a null space basisNofMand re-parametrizethe unknownsXL=NY. If the rank ofMismL, i.e.the equations inFLare linearly independent,Ywouldcontaink=nL−mLnew unknowns. Note that ifall input equations inFwere homogeneous, we couldset one of the unknowns inYto 1 (assuming it is non-zero) and thenk=nL−mL−1.
+    \item SubstituteXL=NYinto the generatorsGof the elim-ination idealIXL.
+    \item Solve  the  new  system  of  polynomial  equationsG(Y) = 0(e.g. using the Gr ̈obner basis method andthe precomputed elimination template forG(Y) = 0obtained by using the automatic generator [3]).
+    \item Back-substitute to recoverXL=NY.
+    \item Extend partial solutions forXLto solutions forX.
+\end{enumerate}
+The main difference between our elimination strategyand the elimination strategies used before in minimalsolvers (see Section2.1.2) is that the previous strategiessubstitute the parametrizationXL=NYdirectly into theinput nonlinear equationsFN. This results inmNpoly-nomial equations innN+kunknownsY∪XN. On theother hand, the new method eliminatesnNunknowns fromthe non-linear equations and creates a systemG(Y) = 0inkunknowns in the pre-processing step. We will showon several important problems from computer vision thatsolving the systemG(Y)  =  0, instead of the systemFN(Y∪XN) = 0, is more efficient.
+\end{quote}
+
+Here is an example of how this strategy can be used.
+\begin{example}
+--
+\end{example}
+For more examples see the original publication.
+During the lecture we will use the example of relative pose with unknown focal length.
+
+\emph{Practical examples}: \cite{ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
 
 \subsection{Beyond Gröbner bases}
-This section is based on~\cite{larsson2018cvpr}.
-Practical examples~\cite{valtonenoernhag-springer-2021}
+This section is based on~\cite{larsson2018cvpr} and utilizes the fact that one does not
+have to use a Gröbner basis in order to generate the elimination template; it was shown
+in~\cite{} that a \emph{spanning set} is enough.
 
-\subsection{Using PEP and other approaches for numerical stabilityi (or speed)}
+\emph{Practical examples:}~\cite{valtonenoernhag-springer-2021}
+
+\subsection{Using PEP and other approaches for numerical stability and/or speed}
 Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem} (PEP)
 to increase both numerical accuracy and speed~\cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
 
+\subsection{The latest on resultant based methods}
+Bhayani \etal{}
 
 \bibliographystyle{apalike}
 {\small
