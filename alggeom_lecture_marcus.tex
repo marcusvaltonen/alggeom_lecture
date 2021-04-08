@@ -420,7 +420,7 @@ By using saturation, one may exclude such solutions. For practical scenarios whe
 see~\cite{pritts2017,valtonenoernhag-etal-wacv-2021}.
 
 \subsection{Eliminating variables}
-Sometimes we are able to eliminate variables even if there are no linear relationship. This
+Sometimes we are able to eliminate variables even if there are no linear relationships. This
 has been used by several authors~\cite{kukelova-etal-cviu-2010,fraundorfer-etal-eccv-2010,jiang-etal-accv-2014,kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}.
 Consider the following toy example
 \begin{example}
@@ -485,12 +485,20 @@ was constructed.
 \end{example}
 
 \subsection{A clever elimination strategy}
-This section is based on~\cite{kukelova-etal-2017-cvpr}.
-Practical examples: \cite{ding-etal-2019-iccv,valtonenoernhag-icpram-2019}
+This section is based on~\cite{kukelova-etal-2017-cvpr} and
+we use the example of relative pose with unknown focal length. This is minimal with six
+point correspondences.
+
+Practical examples: \cite{ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
 
 \subsection{Beyond Gröbner bases}
 This section is based on~\cite{larsson2018cvpr}.
 Practical examples~\cite{valtonenoernhag-springer-2021}
+
+\subsection{Using PEP and other approaches for numerical stabilityi (or speed)}
+Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem} (PEP)
+to increase both numerical accuracy and speed~\cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
+
 
 \bibliographystyle{apalike}
 {\small
