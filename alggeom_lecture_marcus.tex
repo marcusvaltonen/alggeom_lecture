@@ -434,7 +434,7 @@ where $\mat{M}\in\C^{3\times 9}$ is a coefficient matrix and the monomial vector
 \mat{v} = \begin{bmatrix}
         xw & x &
         yw & y &
-        z^2 & zw^2 & zw &
+        z^2 & zw^2 & z &
          w & 1
     \end{bmatrix}^\T\;.
 \end{equation}
@@ -447,7 +447,7 @@ eliminate $z$ by using Gauss--Jordan elimination. The corresponding system, afte
 \setlength\arraycolsep{2pt}
 \begin{matrix}
 %xw & x & yw & y & z^2 & zw^2 & zw & w & 1\\
-z^2 & zw^2 & zw & xw & x & yw & y & w & 1\\
+z^2 & zw^2 & z & xw & x & yw & y & w & 1\\
     1 & & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
     & 1 & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
     & & 1 & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet &
@@ -460,15 +460,15 @@ From the above system we may introduce the functions~$g_i$, such that
     \begin{aligned}
     z^2 + g_1(x,y,w)  &=  0,\\
     zw^2 + g_2(x,y,w)  &=  0,\\
-    zw + g_3(x,y,w)  &=  0,\\
+    z + g_3(x,y,w)  &=  0,\\
     \end{aligned}
 \end{equation}
 where $g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
 Furthermore, we must enforce the relations
 \begin{equation}\label{paper04:eq:knowntilt1}
 \begin{aligned}
-    g_2(x,y,w) &= w g_3(x,y,w), \\
-    w g_1(x,y,w) &= z g_3(x,y,w)\;.
+    g_2(x,y,w) &= w^2 g_3(x,y,w), \\
+    g_1(x,y,w) &= \left(g_3(x,y,w)\right)^2\;.
 \end{aligned}
 \end{equation}
 Now, we have a reduced system with three unknowns and three equations given
