@@ -94,8 +94,10 @@
 \DeclareRobustCommand\wrt{w.r.t\@ifnextchar.{}{.\@}}
 \makeatother
 
+\graphicspath{{./images/}}
+
 \usepackage{hyperref}
-\usepackage[capitalise]{cleveref}
+\usepackage[capitalise,noabbrev]{cleveref}
 
 
 %----------------------------------------------------------------------------------------
@@ -226,26 +228,19 @@ of equations. There are many reasons for this:
 
 Instead we try to find the action matrix using \emph{elimination templates}, which can
 be done offline.
+In~\cite{kukelova2008} one of the first automatic generators was proposed.
+This has later been surpassed by~\cite{larsson2017cvpr}, which uses a slightly
+different approach to reduce the size of the elimination template, and therefore the overall
+performance. It uses \emph{syzygies} which we shall discuss briefly in the next section.
 
 \subsection{Syzygy Modules}
 A module over a ring is a generalization of the notion of a vector space over a field; however,
-unlike vector spaces, most modules do not have bases. Consider the following example:
-
-\begin{example}
-The 
-\end{example}
-
-A submodule
-
-\begin{example}
-An ideal is a submodule
-\end{example}
-
+unlike vector spaces, most modules do not have bases.
 A \emph{free} module is a module that has a basis, and therefore behave much like vector spaces.
 
 We will
 \begin{definition}
-Blah
+---
 \end{definition}
 There for the syzygy module is the analogue of the null space in vector spaces as it is the kernel
 of the map. The ambiguity of the choice of polynomials is therefore captured, and
@@ -261,14 +256,122 @@ defined as
 \end{definition}
 Consider the ideal $I=(x^2+xy,\, )\subset\C[x,\,y]$.
 
+\subsection{Symmetries}
 This is~\cite{larsson2017iccv}.
+
+\section{Applications}
+\subsection{The importance of parameterization}
+For computer vision applications, once you have defined your problem, the next step is often to
+parameterize it. This step is often overlooked---but it is \emph{extremely important}---and can
+decide whether the problem is approachable, even in an offline setting. Why is this? Take
+for example how we choose to model general 3D rotations---there are quaternions, Euler angles
+and other representations---as well as scale ambiguity (for projective relations).
+We will illustrate the impact of
+parameterization. First, look at the example in~\cite{larsson2017cvpr},
+Section~6. Secondly, consider the following example.
+
+\begin{example}
+Consider a mobile platform with a camera rigidly mounted and directed towards the floor.
+By a suitable choice of the
+world coordinate system the camera move in the plane $z=0$ and relative to the ground plane
+positioned at $z=1$. This problem goes back to~\cite{wadenback2013},
+where the camera matrices for two consecutive
+poses $A$ and $B$, are given by
+\begin{equation}\label{paper03:eq:cammats}
+\begin{aligned}
+    \mat{P}_A &= \mat{R}_{\psi\theta}[\mat{I}\;|\;\mat{0}],\\
+    \mat{P}_B &= \mat{R}_{\psi\theta}\mat{R}_\phi[\mat{I}\;|\;{-\mat{t}}],
+\end{aligned}
+\end{equation}
+where $\mat{R}_{\psi\theta}$ is a rotation $\theta$ about the $y$-axis followed by
+a rotation~$\psi$ about the $x$-axis. As the mobile platform rotates about the
+plane normal (or $z$-axis) the angle $\phi$ varies, corresponding to $\mat{R}_\phi$.
+The translation of the mobile platform is modelled by a translation vector~$\mat{t}=(t_x,\,t_y,\,0)^{\T}$.
+It follows that the inter-image homography is given by
+\begin{equation}\label{eq:Hplanar}
+    \mat{H} \sim \mat{R}_{\psi\theta}\mat{R}_{\phi}\mat{T}_{\mat{t}}\mat{R}_{\psi\theta}^{\T},
+\end{equation}
+where $\mat{T}_{\mat{t}}=\mat{I}-\mat{tn}^{\T}$ is the translation matrix corresponding
+to the translation~$\mat{t}$, and $\mat{n}=(0,\,0,\,1)^{\T}$ is a floor normal.
+The homography matrix can be made unique by imposing $\det{\mat{H}}=1$.
+
+Note that there are five degrees of freedom in the homography---two translational components,
+the fixed angles $\psi$ and $\theta$, and the non-fixed angle~$\phi$. Therefore, 2.5-point
+correspondences is necessary in the minimal configutation (remember that the DLT equations yield
+two linearly indepdentend equations for each pair of corresponding points).
+
+\emph{Solver 1}: We use~\eqref{eq:Hplanar} to parameterize the planar motion compatible
+homography~$\mat{H}$ and use 2.5-points to get five equations. Note that a homography about the
+$z$-axis can be parameterized as
+\begin{equation}
+    \mat{R}_z(\phi) = \begin{bmatrix}
+        \cos{\phi} & \sin{\phi} & 0 \\
+        -\sin{\phi} & \cos{\phi} & 0 \\
+        0 &0 &1
+    \end{bmatrix}
+\end{equation}
+where~$\cos^2{\phi}+\sin^2{\phi} = 1$. The rotation matrices~$\mat{R}_y$ and~$\mat{R}_z$
+can be parametrized in analogously. Introduce $c_x=\cos{\phi}$ and $s_x=\sin{\phi}$, and similarly,
+$c_y$, $s_y$, $c_z$, and $s_z$. We nowi have an expanded system with eight unknowns and
+eight equations. We will build a solver from this during the lecture.
+
+\begin{figure}[t!]
+\centering
+\begin{subfigure}[b]{0.475\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{prob_geom1}
+    \caption{}
+    \label{fig:prob_geom:a}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.475\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{prob_geom1b}
+    \caption{}
+    \label{fig:prob_geom:b}
+\end{subfigure}
+\caption{The problem geometry considered in this paper. The camera moves in the plane $z=0$,
+and is tilted about the $y$-axis an unknown angle $\theta$, followed by a rotation about
+the $x$-axis by an unknown angle $\psi$, The ground floor is positioned at $z=1$.
+(b)Revised problem geometry. The camera moves parallel to an unknown plane
+defined by a normal vector~$\mat{n}$ of unit length.}
+\label{fig:prob_geom}
+\end{figure}
+
+\emph{Solver 2}: If we re-think the geometrical interpretation, we can get a simplified system.
+This was done in~\cite{valtonenoernhag-icpram-2019}:
+Instead of considering the original camera matrices~\eqref{paper03:eq:cammats}, choose
+the coordinate system such that
+\mbox{$\mat{P}_A = [\mat{I}\,|\,\mat{0}]$},
+giving $\mat{P}_B = [\mat{R}_{\mat{n}}(\phi)\,|\,-\mat{t}]$. This can be thought of
+as travelling parallel to an unknown plane, as is illustrated in Figure~\ref{fig:prob_geom:a},
+hence the homography can be parameterized as
+\begin{equation}\label{paper03:eq:h}
+    \mat{H}= \mat{R}_{\mat{n}}(\phi)+\mat{t}\mat{n}^{ \T},
+\end{equation}
+where $\mat{t}=(t_x,\,t_y,\,t_z)^{\T}$ is a translation vector and
+\mbox{\smash {$\mat{n}=(n_x,\, n_y,\, n_z)^{\T}$}} the plane normal.
+The constraint of travelling parallel
+to the plane can be expressed as $\mat{t}\cdot\mat{n} = 0$ and, to fix the scale, one may
+assume that~$\norm{\mat{n}}^2=1$, see~\cref{fig:prob_geom:b}.
+
+The rotation matrix can be parameterized using quaternions. Let~$\mat{q}=(1,\,q_x,\,q_y,\,q_z)$
+be a unit quaternion, then~$\mat{n}=(q_x,\,q_y,\,q_z)$
+and the corresponding rotation matrix \mbox{$\mat{R}=\mat{R}(\mat{q})$}.
+This results in a system in six unknowns and six equations. Furthermore, many of the multiplications
+are no longer present, and is replaced with an addition; hence, the degree of the equations are
+lower. We shall further compare the differences between the two solvers during the lecture.
+\end{example}
+
+\subsection{Saturation}
+In computer vision, there are many cases where saturating a variable makes sense, \eg{}
+we want the focal length to be non-zero in all practical scenarios.
+
+
 Comparison to \emph{Rabinowitsch trick}.
 
 \subsection{Using symmetries}
-Blahh
-
-\subsection{The importance of parameterization}
-Blahh
+Rotation
 
 \subsection{The hidden variable trick}
 In certain cases, you may have a linear relationship in one or more variables in your system.
@@ -513,7 +616,9 @@ $X$ into two subsets:
         X_N &= X\setminus X_L.
     \end{aligned}
 \end{equation}
-The setXLcontains the unknowns that appear in linearequations. The setXNcontains the unknowns that appearin equations of higher degree only. We fix the following no-tation:|FL|=mL,|FN|=mN,|XL|=nL,|XN|=nN,which means thatm=mL+mNandn=nL+nN.
+The set $X_L$ contains the unknowns that appear in linearequations. The set $X_N$ contains the
+unknowns that appear in equations of higher degree only. We fix the following notation:
+$|FL|=mL$, $|FN|=mN$, $|XL|=nL$, $|XN|=nN$, which means that $m=mL+mN$ and $n=nL+nN$.
 % Now, the idea of our new elimination method is to elim-inate all unknownsXNfrom non-linear equationsFN. Thenon-linear equationsFNdo not depend on image measure-ments, and are the same for all instance of a given problem.Therefore, we can perform this elimination off-line, in thepre-processing step. This elimination may be computation-ally demanding. However, since we do this only once in thepre-processing step, it is not an issue during the solver runtime. Next, we further eliminatemLunknowns fromXLusingmLlinear equations fromFL. This is done on-linebut it is fast since solving a small linear system is easy.
 In more detail, our method performs the following steps.
 \paragraph{Offline:}
@@ -527,18 +632,54 @@ In more detail, our method performs the following steps.
 \begin{enumerate}[resume]
     \item Rewrite the linear equations $F_L$ in the unknowns $X_L$ as $\mat{M}X_L= 0$, where $\mat{M}$
     is a coefficient matrix and the vector $X_L$ contains all unknowns from $X_L$.
-    \item Compute a null space basisNofMand re-parametrizethe unknownsXL=NY. If the rank ofMismL, i.e.the equations inFLare linearly independent,Ywouldcontaink=nL−mLnew unknowns. Note that ifall input equations inFwere homogeneous, we couldset one of the unknowns inYto 1 (assuming it is non-zero) and thenk=nL−mL−1.
-    \item SubstituteXL=NYinto the generatorsGof the elim-ination idealIXL.
-    \item Solve  the  new  system  of  polynomial  equationsG(Y) = 0(e.g. using the Gr ̈obner basis method andthe precomputed elimination template forG(Y) = 0obtained by using the automatic generator [3]).
-    \item Back-substitute to recoverXL=NY.
-    \item Extend partial solutions forXLto solutions forX.
+    \item Compute a null space basis $N$ of $M$ and re-parametrizei the unknowns $X_L=NY$. If the
+    rank of $M$ is $m_L$, \ie{} the equations in $F_L$ are linearly independent, $Y$ would contain
+    $k=n_L - m_L$ new unknowns. Note that if all input equations in $F$ were homogeneous, we could
+    set one of the unknowns in $Y$ to 1 (assuming it is non-zero) and then $k=n_L-m_L-1$.
+    \item Substitute $X_L=NY$ into the generators $G$ of the elimination ideal $I_{X_L}$.
+    \item Solve the new system of polynomial equations $G(Y) = 0$ (\eg{} using the Gröbner basis
+    method and the precomputed elimination template for $G(Y) = 0$ obtained by using the automatic
+    generator \cite{kukelova2008}).
+    \item Back-substitute to recover $X_L=NY$.
+    \item Extend partial solutions for $X_L$ to solutions for $X$.
 \end{enumerate}
-The main difference between our elimination strategyand the elimination strategies used before in minimalsolvers (see Section2.1.2) is that the previous strategiessubstitute the parametrizationXL=NYdirectly into theinput nonlinear equationsFN. This results inmNpoly-nomial equations innN+kunknownsY∪XN. On theother hand, the new method eliminatesnNunknowns fromthe non-linear equations and creates a systemG(Y) = 0inkunknowns in the pre-processing step. We will showon several important problems from computer vision thatsolving the systemG(Y)  =  0, instead of the systemFN(Y∪XN) = 0, is more efficient.
+The main difference between our elimination strategy and the elimination strategies used before in
+minimal solvers (see Section2.1.2) is that the previous strategies substitute the parametrization
+$X_L=NY$ directly into the input nonlinear equations $F_N$. This results in $m_N$ polynomial
+equations in $n_N+k$ unknowns $Y\cup X_N$. On the other hand, the new method eliminates
+$n_N$ unknowns from the non-linear equations and creates a system $G(Y) = 0$ in $k$ unknowns in the
+pre-processing step. We will show on several important problems from computer vision that solving
+the system $G(Y)  =  0$, instead of the system $F_N(Y\cup X_N) = 0$, is more efficient.
 \end{quote}
 
 Here is an example of how this strategy can be used.
 \begin{example}
---
+About parameterization
+\end{example}
+\begin{example}
+Let the ideal generated by
+\mbox{$\lambda \mat{H}-\mat{R}(\mat{q})-\mat{tn}^{T}=0$} and $\mat{t}\cdot\mat{n}=0$ be denoted~$I$,
+then we seek the elimination ideal~$I\cap\K[\mat{H}]$, for some suitable field~$\K$.
+Over a finite field, this can be done using Macaulay2~\cite{macaulay2}.
+This results in the eleven quartic constraints found
+in~\cite{wadenback2016} and an additional sixth degree polynomial\footnote{See the Appendix
+for implementation details.}. The constraints were symbolically verified to hold over~$\C$
+as well.
+In~\cite{wadenback2016} eleven quartic constraints for planar motion compatible
+homographies were derived, and used to create a minimal solver.
+These constraints were experimentally obtained by randomly generating points on the manifold defining
+the planar motion compatible homographies.
+In order to be able to work over a finite field, the rotation matrices were constructed
+using Pythagorean triplets, hence integer versions of the problem were obtained. By doing so,
+the coefficients for the polynomials could be found.
+With this approach, however, one cannot rule out the existence of higher order polynomials, and thus, sufficiency cannot be proven. We will approach this differently in the next Section.
+
+In this section,
+we will show that the eleven quartic constraints discussed in Section~\ref{paper03:sec:necessary} are
+necessary but not sufficient. Furthermore, we show
+that by adding a sixth degree polynomial to the existing quartic constraints one may guarantee
+sufficiency. This is done by a novel parameterization, which allows one to efficiently compute the
+relevant elimination ideal.
 \end{example}
 For more examples see the original publication.
 During the lecture we will use the example of relative pose with unknown focal length.
