@@ -23,6 +23,7 @@
 \usepackage{hyphenat}
 \usepackage[inline]{enumitem}
 
+\usepackage{xcolor}
 \usepackage{mathrsfs}
 \newtheorem{theorem}{Theorem}
 \newtheorem{corollary}{Corollary}
@@ -74,6 +75,7 @@
 \newcommand{\f}[3]{#1\,:\,#2\,\lra\,#3}
 \newcommand{\norm}[1]{\left\|#1\right\|}
 \DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\syz}{Syz}
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\atan}{atan2}
 \DeclareMathOperator{\tr}{tr}
@@ -217,7 +219,7 @@ Let us recapitulate: given a polynomial
 system of equations, use Buchberger's algorithm to obtain a Gröbner basis. Create the
 action matrix and compute the eigenvalues and eigenvectors to extract the solutions.
 
-\subsection{Elimination template}
+\subsection{Elimination templates}
 In practice we do not compute a Gröbner basis everytime we want to solve a polynomial system
 of equations. There are many reasons for this:
 \begin{enumerate*}[label={\roman*}]
@@ -228,6 +230,11 @@ of equations. There are many reasons for this:
 
 Instead we try to find the action matrix using \emph{elimination templates}, which can
 be done offline.
+{\color{red}[More here]}
+
+In~\cite{byrod-phd} it was shown that one does not need a Gröbner basis, but in fact
+a \emph{spanning set} is enough.
+
 In~\cite{kukelova2008} one of the first automatic generators was proposed.
 This has later been surpassed by~\cite{larsson2017cvpr}, which uses a slightly
 different approach to reduce the size of the elimination template, and therefore the overall
@@ -237,13 +244,33 @@ performance. It uses \emph{syzygies} which we shall discuss briefly in the next 
 A module over a ring is a generalization of the notion of a vector space over a field; however,
 unlike vector spaces, most modules do not have bases.
 A \emph{free} module is a module that has a basis, and therefore behave much like vector spaces.
-
-We will
+You can read more about modules and syzygies in Chapters 5 and 6 in~\cite{cox2}.
+In this lecture, we will only make use of the following definition
 \begin{definition}
----
+Let~$(f_1,\ldots,f_t)$ be an ordered $t$-tuple of elements
+$f_i\in\K[x]$, then the \emph{(first) syzygy module} is
+\begin{equation}
+\syz(f_1,\ldots,f_t) \coloneqq \left\{
+    (s_1,\ldots,s_t)\;|\; \sum_{i=1}^t s_if_i=0, \te{ and } s_i\in\K[x]
+\right\}
+\end{equation}
 \end{definition}
-There for the syzygy module is the analogue of the null space in vector spaces as it is the kernel
-of the map. The ambiguity of the choice of polynomials is therefore captured, and
+The syzygy module is the analogue of the null space in vector spaces. It is also a useful tool
+for encoding the ambiguity of polynomials in an ideal. To see this, consider
+$p\in \langle f_1,\ldots f_t\rangle$, then
+\begin{equation}
+    p = \sum_{i=1}^t h_if_i = \sum_{i=1}^t (h_i+s_i)f_i, \qquad (s_1,\ldots,s_t)\in\syz(f_1,\ldots,f_t)\;.
+\end{equation}
+This can be utilized to find representations of polynomials during the generation of elimination
+templates for a specific set of equations. By selecting the representations with care,
+the resulting size of the elimination template can possibly be reduced. A simply heuristic for
+doing so was used in~\cite{larsson2017cvpr}, which showed that a large variety of problems benefited
+from this approach.
+
+% We illustrate this in the following example
+\begin{example}
+See Viktor Larsson's PhD thesis Example 1.1 (p. 46--47).
+\end{example}
 
 \subsection{Saturation of an ideal}
 Consider the following definition:
@@ -254,10 +281,19 @@ defined as
     \sat(I,\, f_s) \coloneqq \{p\;|\;\exists N\geq 0,\, f_s^N p\in I  \}\;.
 \end{equation}
 \end{definition}
-Consider the ideal $I=(x^2+xy,\, )\subset\C[x,\,y]$.
+The interpretation, that is meaningful for us in the context of today's lecture, is that we
+have a way to efficiently remove solutions for which~$f_s(x) =0$.
+Allowing saturation in the process of generating elimination templates was introduced
+in~\cite{larsson2017iccv}.
 
 \subsection{Symmetries}
-This is~\cite{larsson2017iccv}.
+This is based on~\cite{larsson2016eccv}, and is perhaps easiest understood by looking
+at Examples 3.12--3.13 (p. 89--91) in~\cite{larsson-phd}.
+In short, by exploiting symmetries the corresponding eigenvalue problem (part of the
+elimination template) is block-diagonal; since the eigenvalues of a block-matrix is
+the eigenvalues of each block, we get a reduced problem. One can therefore select the smallest
+block and solve for the monomials corresponding to it, and solve for the remaining monomials
+using back-substitution.
 
 \section{Applications}
 \subsection{The importance of parameterization}
@@ -267,8 +303,11 @@ decide whether the problem is approachable, even in an offline setting. Why is t
 for example how we choose to model general 3D rotations---there are quaternions, Euler angles
 and other representations---as well as scale ambiguity (for projective relations).
 We will illustrate the impact of
-parameterization. First, look at the example in~\cite{larsson2017cvpr},
-Section~6. Secondly, consider the following example.
+parameterization.
+
+\begin{example}
+Look at the example in~\cite{larsson2017cvpr}, Section~6.
+\end{example}
 
 \begin{example}
 Consider a mobile platform with a camera rigidly mounted and directed towards the floor.
@@ -436,7 +475,7 @@ x \\
 y \\
 1
 \end{bmatrix}
-= 0\;.
+= 0,
 \end{equation}
 where
 \begin{equation}
@@ -632,15 +671,15 @@ In more detail, our method performs the following steps.
 \begin{enumerate}[resume]
     \item Rewrite the linear equations $F_L$ in the unknowns $X_L$ as $\mat{M}X_L= 0$, where $\mat{M}$
     is a coefficient matrix and the vector $X_L$ contains all unknowns from $X_L$.
-    \item Compute a null space basis $N$ of $M$ and re-parametrizei the unknowns $X_L=NY$. If the
-    rank of $M$ is $m_L$, \ie{} the equations in $F_L$ are linearly independent, $Y$ would contain
+    \item Compute a null space basis $\mat{N}$ of $\mat{M}$ and re-parametrize the unknowns $X_L=\mat{N}Y$. If the
+    rank of $\mat{M}$ is $m_L$, \ie{} the equations in $F_L$ are linearly independent, $Y$ would contain
     $k=n_L - m_L$ new unknowns. Note that if all input equations in $F$ were homogeneous, we could
     set one of the unknowns in $Y$ to 1 (assuming it is non-zero) and then $k=n_L-m_L-1$.
     \item Substitute $X_L=NY$ into the generators $G$ of the elimination ideal $I_{X_L}$.
     \item Solve the new system of polynomial equations $G(Y) = 0$ (\eg{} using the Gröbner basis
-    method and the precomputed elimination template for $G(Y) = 0$ obtained by using the automatic
+    method and the precomputed elimination template for~\mbox{$G(Y) = 0$} obtained by using the automatic
     generator \cite{kukelova2008}).
-    \item Back-substitute to recover $X_L=NY$.
+    \item Back-substitute to recover $X_L=\mat{N}Y$.
     \item Extend partial solutions for $X_L$ to solutions for $X$.
 \end{enumerate}
 The main difference between our elimination strategy and the elimination strategies used before in
@@ -688,20 +727,23 @@ During the lecture we will use the example of relative pose with unknown focal l
 
 \subsection{Beyond Gröbner bases}
 This section is based on~\cite{larsson2018cvpr} and utilizes the fact that one does not
-have to use a Gröbner basis in order to generate the elimination template; it was shown
-in~\cite{} that a \emph{spanning set} is enough.
+have to use a Gröbner basis in order to generate the elimination template.
+This can lead to smaller elimination template sizes.
 
 \emph{Practical examples:}~\cite{valtonenoernhag-springer-2021}
 
 \subsection{Using PEP and other approaches for numerical stability and/or speed}
+See also~Section 1.3.3 in~\cite{larsson-phd}.
 Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem} (PEP)
-to increase both numerical accuracy and speed~\cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
+to increase both numerical accuracy and speed \cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
 
 \subsection{The latest on resultant based methods}
-Bhayani \etal{}
+In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators using
+resultant-based methods are proposed. Major stregths compared to the action matrix method is
+in terms of numerical stability.
 
 \bibliographystyle{apalike}
 {\small
 \bibliography{alggeom_lecture_marcus}}
 
- \end{document}
+\end{document}
