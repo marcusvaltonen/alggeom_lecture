@@ -12,8 +12,8 @@ if ~exist('solvers','dir')
 end
 
 %% Run generator
-solv_name = 'example04';
-problem = @problem_example04;
+solv_name = 'example03';
+problem = @problem_example03;
 opt = default_options();
 
 % If Macaulay2 is not runnable as M2 on your system, update this

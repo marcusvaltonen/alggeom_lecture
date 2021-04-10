@@ -133,6 +133,8 @@ automatic solver by Larsson~\etal{}, which you should install and get accustomed
 to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
 Apart from the course literature, you are also referred to Viktor Larsson's PhD
 thesis for a deeper understanding of the content in this lecture.
+Examples marked with (*) have a code snippet associated with them and will be discussed during the
+lecture in more detail.
 
 \section{Theory}
 \subsection{Recapitulation of the course contents}
@@ -304,11 +306,11 @@ and other representations---as well as scale ambiguity (for projective relations
 We will illustrate the impact of
 parameterization.
 
-\begin{example}
+\begin{example}[*]
 Look at the example in~\cite{larsson2017cvpr}, Section~6.
 \end{example}
 
-\begin{example}\label{ex:Hplanar1}
+\begin{example}[*]\label{ex:Hplanar1}
 Consider a mobile platform with a camera rigidly mounted and directed towards the floor.
 By a suitable choice of the
 world coordinate system the camera move in the plane $z=0$ and relative to the ground plane
@@ -454,18 +456,19 @@ of the corresponding~\emph{companion matrix}, or---if the degree of the polynomi
 less than or equal to four---a closed-form solution can be obtained. We illustrate
 the latter in the following example:
 
-\begin{example}\label{ex:hidden2}
+\begin{example}[*]\label{ex:hidden2}
 Consider the following system
 \begin{equation}
 \begin{aligned}
-m_{11}xz + m_{12}x + m_{13}yz + m_{14}y + m_{15}z^2 + m_{16}z &= 0, \\
-m_{22}xz + m_{22}x + m_{23}yz + m_{24}y + m_{25}z^2 + m_{26}z &= 0, \\
+m_{11}xz + m_{12}x + m_{13}yz + m_{14}y + m_{15}z^2 + m_{16}z + m_{17} &= 0, \\
+m_{22}xz + m_{22}x + m_{23}yz + m_{24}y + m_{25}z^2 + m_{26}z + m_{27} &= 0, \\
+m_{32}xz + m_{32}x + m_{33}yz + m_{34}y + m_{35}z^2 + m_{36}z + m_{37} &= 0, \\
 \end{aligned}
 \end{equation}
 where~$m_{ij}\in\C$ are generic coefficients.
 By looking at a specific (non-degenerate) instance using Macaulay2
 (or by using the~\emph{mixed cell method}) we see that there are in
-general four solutions to this problem. One could use the action matrix method to construct an
+general four solutions to this problem (including the trivial zero solution). One could use the action matrix method to construct an
 elimination template; however, since the system is linear in $x$ and $y$ it can be rewritten as
 \begin{equation}\label{eq:specialnullvector}
 \mat{M}(z)
@@ -480,9 +483,9 @@ where
 \begin{equation}
 \mat{M}(z)=
 \begin{bmatrix}
-    m_{11}z + m_{12} & m_{13}z + m_{14} & m_{15}z^2 + m_{16}z \\
-    m_{22}z + m_{22} & m_{23}z + m_{24} & m_{25}z^2 + m_{26}z \\
-    m_{32}z + m_{32} & m_{33}z + m_{34} & m_{35}z^2 + m_{36}z
+    m_{11}z + m_{12} & m_{13}z + m_{14} & m_{15}z^2 + m_{16}z + m_{17} \\
+    m_{22}z + m_{22} & m_{23}z + m_{24} & m_{25}z^2 + m_{26}z + m_{27} \\
+    m_{32}z + m_{32} & m_{33}z + m_{34} & m_{35}z^2 + m_{36}z + m_{37}
 \end{bmatrix}\;.
 \end{equation}
 In conclusion, we seek the one-dimensional nullspace of~$\mat{M}(z)$. Specifically, we want
@@ -538,7 +541,7 @@ are four degrees of freedom (three translational parameters, the focal length an
 distortion coefficient, but the scale ambiguity is present); hence, the problem is minimal using four point correspondences.
 More specifically, we want to solve
 \begin{equation}
-    f^2\cdot \phi(\mat{x}_i',\,\lambda)^\T \mat{F} \phi(\mat{x}_i,\,\lambda) = 0, \qquad \te{for }i=1,\ldots 4.
+    f^2\cdot \phi(\mat{x}_i',\,\lambda)^\T \mat{F} \phi(\mat{x}_i,\,\lambda) = 0, \qquad \te{for }i=1,\ldots, 4.
 \end{equation}
 Again, the equations are linear in~$\mat{t}$ and therefore we may consider the
 system
@@ -549,7 +552,7 @@ Here the matrix~$\mat{M}$ is of size $4\times 3$, and must be rank deficient to 
 null vector. Therefore, all $3\times 3$ minors~$\mat{M}_i$ must vanish\footnote{A
 $k\times k$ \emph{minor} of a matrix~$\mat{A}$ of size $m\times n$ is the determinant of a $k\times k$ matrix obtained by removing $m-k$ rows and $n-k$ columns.}, \ie{}
 \begin{equation}
-    \mat{M}_i(f,\,\lambda) = 0,  \qquad \te{for }i=1,\ldots 4.
+    \mat{M}_i(f,\,\lambda) = 0,  \qquad \te{for }i=1,\ldots, 4.
 \end{equation}
 We now have a polynomial system with four equations and two unknowns (instead of four unknowns).
 \end{example}
@@ -567,7 +570,7 @@ see~\cite{pritts2017,valtonenoernhag-etal-wacv-2021}.
 Sometimes we are able to eliminate variables even if there are no linear relationships. This
 has been used by several authors~\cite{kukelova-etal-cviu-2010,fraundorfer-etal-eccv-2010,jiang-etal-accv-2014,kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}.
 Consider the following toy example
-\begin{example}
+\begin{example}[*]
 Assume we have four unknowns $x$, $y$, $z$ and $w$, where $x^2+y^2=1$. We seek to solve
 \begin{equation}
 \mat{M}\mat{v} = 0,
@@ -628,6 +631,10 @@ solutions as well). Using~\cite{larsson2018cvprb} an elimination template of siz
 was constructed.
 \fi
 \end{example}
+
+\emph{Note:} In some cases, the elements of the coefficient matrix of the eliminated system~$\hat{\mat{M}}$ have a special structure.
+This is the case in~\cite{kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}. In such cases
+one must encode this structure in~$\Z_p$ when generating the elimination template.
 
 \subsection{A clever elimination strategy}
 This section is based on~\cite{kukelova-etal-2017-cvpr}. We reproduce some of the material

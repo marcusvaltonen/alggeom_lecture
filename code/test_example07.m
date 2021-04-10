@@ -16,8 +16,8 @@ end
 
 
 %% Run generator
-solv_name = 'example06_v2';
-problem = @problem_example06_v2;
+solv_name = 'example07_v2';
+problem = @problem_example07_v2;
 opt = default_options();
 
 % 14 sols
