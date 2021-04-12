@@ -514,16 +514,6 @@ are no longer present, and is replaced with an addition; hence, the degree of th
 lower. We shall further compare the differences between the two solvers during the lecture.
 \end{example}
 
-\subsection{Saturation}
-In computer vision, there are many cases where saturating a variable makes sense, \eg{}
-we want the focal length to be non-zero in all practical scenarios.
-
-
-Comparison to \emph{Rabinowitsch trick}.
-
-\subsection{Using symmetries}
-Rotation
-
 \subsection{The hidden variable trick}
 In certain cases, you may have a linear relationship in one or more variables in your system.
 We can then use the~\emph{hidden variable trick} to eliminate these variables,
@@ -623,7 +613,7 @@ In the following example, which is a modification of~\cref{ex:hidden1}, we show 
 the hidden variable trick can be used to reduce the number of unknowns, but still
 apply the action matrix method to the resulting system.
 
-\begin{example}
+\begin{example}\label{ex:hidden3}
 Consider the relative pose problem with known rotation but unknown and equal focal length and radial distortion.
 Assume that the optical center and the distortion center coincide, and choose the local
 coordinate system such that this point is at the origin. To correct for radial distortion we use
@@ -662,7 +652,7 @@ system
 Here the matrix~$\mat{M}$ is of size $4\times 3$, and must be rank deficient to allow a non-trivial
 null vector. Therefore, all $3\times 3$ minors~$\mat{M}_i$ must vanish\footnote{A
 $k\times k$ \emph{minor} of a matrix~$\mat{A}$ of size $m\times n$ is the determinant of a $k\times k$ matrix obtained by removing $m-k$ rows and $n-k$ columns.}, \ie{}
-\begin{equation}
+\begin{equation}\label{eq:minors}
     \mat{M}_i(f,\,\lambda) = 0,  \qquad \te{for }i=1,\ldots, 4.
 \end{equation}
 We now have a polynomial system with four equations and two unknowns (instead of four unknowns).
@@ -746,6 +736,44 @@ was constructed.
 \emph{Note:} In some cases, the elements of the coefficient matrix of the eliminated system~$\hat{\mat{M}}$ have a special structure.
 This is the case in~\cite{kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}. In such cases
 one must encode this structure in~$\Z_p$ when generating the elimination template.
+
+\subsection{Saturation}
+In computer vision, there are many cases where saturating a variable makes sense, \eg{}
+we want the focal length to be non-zero in all practical scenarios.
+
+\begin{example}
+Consider~\cref{ex:hidden3}. The system~\eqref{eq:minors} has infinitely many solutions; however,
+these correspond to solutions where~$f=0$. If we saturate~$f$ there are finitely many solutions.
+\end{example}
+
+The automatic generator supports saturating ideal w.r.t.\@ a monomial. In many places one might
+want to remove more complex degeneracies, \eg{} one might want to enforce that a homography~$\mat{H}$
+is invertible, hence~$\det{\mat{H}}\neq 0$. If you want to saturate a polynomial $p(\mat{x}$ this
+can still be accomplished by introducing a new
+variable~$x_0$ as well as the constraint~$x_0-f(\mat{x}) = 0$.
+Another way of eliminating certain solutions is by using the \emph{Rabinowitsch trick},
+which is to introduce~$x_0f(\mat{x})-1 = 0$.
+We show in an example that using saturation produces smaller elimination templates.
+
+\begin{example}[*]
+Ah
+\end{example}
+
+Furthermore, one may exclude the auxilliary variable~$x_0$ from the quotient ring basis
+(when saturating polynomials).
+
+\begin{example}[*]
+Ah 2
+\end{example}
+
+\subsection{Using symmetries}
+We use the example from~\cite{larsson2016eccv}.
+
+\begin{example}[*]
+Twofold symmetries.
+\end{example}
+
+\emph{Practical examples:}~\cite{larsson-etal-cvpr-2018,wu-cvpr-2015}.
 
 \subsection{A clever elimination strategy}
 This section is based on~\cite{kukelova-etal-2017-cvpr}. We reproduce some of the material
