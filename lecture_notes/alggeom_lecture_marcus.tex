@@ -111,6 +111,10 @@
 \usepackage{hyperref}
 \usepackage[capitalise,noabbrev]{cleveref}
 
+% Use paragraph for "Practical examples"
+\usepackage{titlesec}
+\titleformat*{\paragraph}{\itshape\mdseries}
+\newcommand{\pexamples}{\paragraph{Practical examples:}}
 
 %----------------------------------------------------------------------------------------
 %   TITLE SECTION
@@ -775,7 +779,7 @@ We use the example from~\cite{larsson2016eccv}.
 Twofold symmetries.
 \end{example}
 
-\emph{Practical examples:}~\cite{larsson-etal-cvpr-2018,wu-cvpr-2015}.
+\pexamples~\cite{larsson-etal-cvpr-2018,wu-cvpr-2015}.
 
 \subsection{A clever elimination strategy}
 This section is based on~\cite{kukelova-etal-2017-cvpr}. We reproduce some of the material
@@ -892,19 +896,22 @@ We consider the the example of relative pose with unknown focal length,
 from~\cite{kukelova-etal-2017-cvpr}.
 \end{example}
 
-\emph{Practical examples}: \cite{kukelova-etal-2017-cvpr,ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
+\pexamples~\cite{kukelova-etal-2017-cvpr,ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
 
 \subsection{Beyond Gröbner bases}
 This section is based on~\cite{larsson2018cvpr} and utilizes the fact that one does not
 have to use a Gröbner basis in order to generate the elimination template.
 This can lead to smaller elimination template sizes.
 
-\emph{Practical examples:}~\cite{valtonenoernhag-springer-2021}
+\pexamples~\cite{valtonenoernhag-springer-2021}
 
 \subsection{Using PEP and other approaches for numerical stability and/or speed}
 See also~Section 1.3.3 in~\cite{larsson-phd}.
 Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem} (PEP)
 to increase both numerical accuracy and speed \cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
+Furthermore, they prove a result similar to saturation in this setting---namely how to reomve
+zero (generalized) eigenvalues by row and column operations prior to solving the PEP. This makes the dimension
+of the coefficient matrices of the PEP smaller, which speeds up the overall performance.
 
 \subsection{The latest on resultant based methods}
 In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators using
