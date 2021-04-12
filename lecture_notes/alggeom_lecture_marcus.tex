@@ -666,10 +666,78 @@ Sometimes it is beneficial (or even necessary) to involve saturation in the proc
 In practice, this is often the case when you need to enforce a special structure to the
 null vector, \cf{}~\cref{ex:hidden2}. In~\cref{eq:specialnullvector} we need the last
 element to be equal to one; however, this condition is lost when only enforcing the minors
-to vanish. It can happen that a one-dimensional family of false solutions is introduces corresponding
-to null vectors where the last element is zero.
-By using saturation, one may exclude such solutions. For practical scenarios where this is done
-see~\cite{pritts2017,valtonenoernhag-etal-wacv-2021}.
+to vanish.
+This is also the case when considering \emph{radially-distorted conjugate translations},
+which we discuss next. We will briefly outline one of the solvers from~\cite{pritts2017},
+and return to it later when discussing saturation. The following text is taken verbatim from the paper:
+
+\begin{quote}
+Assume that the scene plane $\pi$ and a camera's image plane $\pi'$ are related point-wise by the
+homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar, 
+$\mat{X}_i\in\pi$ and $\mat{x}'\in\pi'$. Let $\mat{X}_i$ and~$\mat{X}'_i$ be two points on the
+scene plane $\pi$ such that $\mat{X}'_i -\mat{X}_i=\mat{t}$. By encoding $\mat{t}$ in the
+homogeneous translation matrix $\mat{T}$, the points $\mat{X}_i$ and $\mat{X}_i$ as imaged by
+camera $\mat{P}$ can be expressed as
+\begin{equation}
+    \alpha_i\mat{x}_i' = \mat{PX}'_i = \mat{PTX}_i = \mat{PTP}^{-1}\mat{x}_i=\mat{H_ux}_i,
+\end{equation}
+where the homography $\mat{H_u}=\mat{PTP}^{-1}$ is called a conjugate translation because of the
+form of its matrix decomposition and points $\mat{x}_i$ and $\mat{x}'_i$ are in correspondence
+with respect to the conjugate translation $\mat{H_u}$, which we denote $\mat{x}_i\leftrightarrow\mat{x}'_i$.
+Decomposing $\mat{H_u}$ into its projective components gives
+\begin{equation}
+\alpha_i\mat{x}_i' = \left(\mat{I}_3+s_i^{\mat{u}}\mat{ul}^\T\right)\mat{x}_i
+\end{equation}
+where $\mat{I}_3$ is the $3\times 3$ identity matrix, and
+\begin{itemize}
+\item line $\mat{l}$ is the imaged scene plane’s vanishing line,
+\item point $\mat{u}$ is the vanishing direction of translation, which must meet the vanishing
+      line~$\mat{l}$, \ie{} $\mat{l}^\T\mat{u} = 0$,
+\item and scalar $s_i^{\mat{u}}$ is the magnitude of translation in the direction $\mat{u}$ for
+      the point correspondence $\mat{x}_i\leftrightarrow\mat{x}_i'$.
+\end{itemize}
+\end{quote}
+
+\begin{example}\label{ex:hidden4}
+Again, using the one-dimensional division model to model radial distortion, we have the
+governing equations
+\begin{equation}\label{eq:conjtrans}
+\alpha_i \phi(\mat{x}_i',\lambda) = \left(\mat{I}_3+s_i^{\mat{u}}\mat{ul}^\T\right)\phi(\mat{x}_i,\lambda),
+\end{equation}
+for a pair of corresponding points~$\mat{x}_i\leftrightarrow\mat{x}_i'$ under the assumption of
+conjugate translations. We will recreate the 3-point solver named H3$\mat{lu}s_{\mat{u}}\lambda$
+in the paper. First, we constrain $l_3=1$ and let $\norm{\mat{u}}=s_1^{\mat{u}}$ to fix the scale
+ambiguity\footnote{See the paper for more details.}.
+Introduce the notation~$\bar{s}_i^{\mat{u}}\coloneqq s_i^{\mat{u}} / \norm{\mat{u}}$, which gives $\bar{s}_1^{\mat{u}}=1$. Furthermore, assume two point correspondences have the same scale of translation,
+\ie{} $\bar{s}_1^{\mat{u}} = \bar{s}_2^{\mat{u}} = 1$. In this case, we have seven unknowns ($l_1$,
+$l_2$, $u_1$, $u_2$, $u_3$, $\bar{s}_3^{\mat{u}}$, $\lambda$) and seven equations---two equations
+per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0$.
+Since the equations are linear in~$\mat{u}$ we may write~\eqref{eq:conjtrans} as
+\begin{equation}
+\mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)\begin{bmatrix} u_1 \\ u_2 \\ u_3 \\1\end{bmatrix} = 0
+\end{equation}
+where $\mat{M} = \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)$ is a $7\times 4$ matrix. It turns out that
+the matrix has a special structure, namely
+\begin{equation}\label{eq:pritts-M}
+\mat{M} = \begin{bmatrix}
+m_{11} & m_{12} &      0 & m_{14} \\
+m_{21} & m_{22} &      0 & m_{24} \\
+m_{31} &      0 & m_{33} & m_{34} \\
+m_{41} &      0 & m_{43} & m_{44} \\
+m_{51} & m_{52} &      0 & m_{54} \\
+m_{61} &      0 & m_{63} & m_{64} \\
+l_1 & l_2 &   1 & 0
+\end{bmatrix}\;.
+\end{equation}
+\end{example}
+
+As previously mentioned, by only considering the minors the structure of the null space
+vector is lost.
+It can happen that a one-dimensional family of false solutions is introduced corresponding
+to null vectors where the last element is zero, which is the case for both~\cref{ex:hidden3}
+(which is a special case of the solver proposed in~\cite{valtonenoernhag-etal-wacv-2021})
+and~\cref{ex:hidden4} from~\cite{pritts2017}.
+By using saturation, one may exclude such solutions, which we shall discuss later in more detail.
 
 \subsection{Eliminating variables}
 Sometimes we are able to eliminate variables even if there are no linear relationships. This
@@ -740,6 +808,7 @@ was constructed.
 \emph{Note:} In some cases, the elements of the coefficient matrix of the eliminated system~$\hat{\mat{M}}$ have a special structure.
 This is the case in~\cite{kukelova-etal-cvpr-2015,valtonenoernhag-springer-2021}. In such cases
 one must encode this structure in~$\Z_p$ when generating the elimination template.
+This can, however, also happen with the hidden variable method, as in~\eqref{eq:pritts-M}.
 
 \subsection{Saturation}
 In computer vision, there are many cases where saturating a variable makes sense, \eg{}
@@ -751,15 +820,17 @@ many of these correspond to solutions where~$f=0$. If we saturate~$f$ there are 
 \end{example}
 
 The automatic generator supports saturating an ideal w.r.t.\@ a monomial. In many situations, one might
-want to remove more complex degeneracies, \eg{} one might want to enforce that a homography~$\mat{H}$
-is invertible, hence~$\det{\mat{H}}\neq 0$. If you want to saturate a polynomial~$f$ this
+want to remove more complex degeneracies, \eg{} one might want to enforce a homography~$\mat{H}$
+to be invertible, hence~$\det{\mat{H}}\neq 0$. If you want to saturate a polynomial~$f$ this
 can still be accomplished by introducing a new
 variable~$x_0$ as well as the constraint~$x_0-f(\mat{x}) = 0$.
 Another way of eliminating certain solutions is by using the \emph{Rabinowitsch trick}\footnote{This
 is often used when proving Hilbert's Nullstellensatz (\cf{} Theorem 2, p. 173, in~\cite{cox}) from the weak
 Nullstellensatz.},
 which is to introduce~$x_0f(\mat{x})-1 = 0$.
-We show in an example that using saturation produces smaller elimination templates.
+We show in an example that using saturation produces smaller elimination
+templates.\footnote{Empirically, this is generaly the case. One argument for why this is the case,
+is because the auxiliary variable $x_0$ is linear in the equation and therefore easier to eliminate.}
 
 \begin{example}[*]
 Ah
@@ -911,7 +982,7 @@ Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem}
 to increase both numerical accuracy and speed \cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
 Furthermore, they prove a result similar to saturation in this setting---namely how to reomve
 zero (generalized) eigenvalues by row and column operations prior to solving the PEP. This makes the dimension
-of the coefficient matrices of the PEP smaller, which speeds up the overall performance.
+of the coefficient matrices of the PEP smaller, which benefits the overall performance.
 
 \subsection{The latest on resultant based methods}
 In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators using
