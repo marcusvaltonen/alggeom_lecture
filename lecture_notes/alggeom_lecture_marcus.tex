@@ -879,7 +879,7 @@ $X$ into two subsets:
 \end{equation}
 The set $X_L$ contains the unknowns that appear in linearequations. The set $X_N$ contains the
 unknowns that appear in equations of higher degree only. We fix the following notation:
-$|FL|=mL$, $|FN|=mN$, $|XL|=nL$, $|XN|=nN$, which means that $m=mL+mN$ and $n=nL+nN$.
+$|F_L|=m_L$, $|F_N|=mN$, $|X_L|=n_L$, $|X_N|=n_N$, which means that $m=m_L+m_N$ and $n=n_L+n_N$.
 % Now, the idea of our new elimination method is to elim-inate all unknownsXNfrom non-linear equationsFN. Thenon-linear equationsFNdo not depend on image measure-ments, and are the same for all instance of a given problem.Therefore, we can perform this elimination off-line, in thepre-processing step. This elimination may be computation-ally demanding. However, since we do this only once in thepre-processing step, it is not an issue during the solver runtime. Next, we further eliminatemLunknowns fromXLusingmLlinear equations fromFL. This is done on-linebut it is fast since solving a small linear system is easy.
 In more detail, our method performs the following steps.
 \paragraph{Offline:}
@@ -989,6 +989,7 @@ In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators us
 resultant-based methods are proposed. Major stregths compared to the action matrix method is
 in terms of numerical stability.
 
+\clearpage
 \bibliographystyle{apalike}
 {\small
 \bibliography{alggeom_lecture_marcus}}
