@@ -193,7 +193,7 @@ After this exposition one may ask: how does this relate to solving polynomial sy
 of equations? The answer lies in the fact that we have efficient ways of computing
 a Gröbner basis, by means of \emph{Buchberger's algorithm}.
 For more details regarding the algorithm, and to get a deeper understanding of the subject,
-the work of Cox~\etal{}~\cite{cox,cox2} is highly recommended.
+see~\cite{cox,cox2}.
 
 \subsection{The action matrix method}\label{kappa:sec:actionmatrix}
 Let us return to the polynomial system of equations~\eqref{kappa:eq:polsys}. Under the
@@ -246,7 +246,7 @@ of equations. There are many reasons for this:
 Instead we try to find the action matrix using \emph{elimination templates}, which encode the
 relevant eliminations without explicitly working with a Gröbner basis.
 We suppress $\mat{x}\in V(I)$ now, as it is implicitly understood.
-Consider the $j$:th row of equation~\eqref{eq:actionmat}. Any way of expressing $[\alpha b_i]$
+Consider the $i$:th row of equation~\eqref{eq:actionmat}. Any way of expressing $[\alpha b_i]$
 corresponds to finding polynomials on the form
 \begin{equation}\label{eq:polys}
     p_i = \alpha b_i -\sum_{j=1}^Km_{ij}b_{j}\in I,
@@ -254,9 +254,9 @@ corresponds to finding polynomials on the form
 and since the action matrix is unique\footnote{Since $\mathcal{B}$ is a linear basis over $A$.},
 we only need to find a single polynomial on this form, containing elements from~$\mat{b}$ or the
 expanded set~$\alpha\mat{b}$.
-In order to do so, we augment the original system~\label{kappa:eq:polsys} by multiplying it
-with some monomials, \eg{}
-\begin{equation}\label{kappa:eq:polsys}
+In order to do so, we augment the original system~\eqref{kappa:eq:polsys} by multiplying it
+with a set of monomials, \eg{}
+\begin{equation}\label{kappa:eq:polsys-aug}
     \begin{aligned}
     \left.
     \begin{aligned}
@@ -368,7 +368,7 @@ $f_i\in\K[x]$, then the \emph{(first) syzygy module} is
 \begin{equation}
 \syz(f_1,\ldots,f_t) \coloneqq \left\{
     (s_1,\ldots,s_t)\;|\; \sum_{i=1}^t s_if_i=0, \te{ and } s_i\in\K[x]
-\right\}
+\right\}\;.
 \end{equation}
 \end{definition}
 The syzygy module is the analogue of the null space in vector spaces. It is also a useful tool
@@ -379,7 +379,7 @@ $p\in \langle f_1,\ldots f_t\rangle$, then
 \end{equation}
 This can be utilized to find representations of polynomials during the generation of elimination
 templates for a specific set of equations. By selecting the representations with care,
-the resulting size of the elimination template can possibly be reduced. A simply heuristic for
+the resulting size of the elimination template can (possibly) be reduced. A simply heuristic for
 doing so was used in~\cite{larsson2017cvpr}, which showed that a large variety of problems benefited
 from this approach.
 
