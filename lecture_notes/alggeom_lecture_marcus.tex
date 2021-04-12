@@ -96,6 +96,16 @@
 \DeclareRobustCommand\wrt{w.r.t\@ifnextchar.{}{.\@}}
 \makeatother
 
+\newcommand{\CE}{\ensuremath{\mat{C}_\mathcal{E}}}
+\newcommand{\CR}{\ensuremath{\mat{C}_\mathcal{R}}}
+\newcommand{\CB}{\ensuremath{\mat{C}_\mathcal{B}}}
+\newcommand{\CEk}[1]{\ensuremath{\mat{C}_{\mathcal{E}_{#1}}}}
+\newcommand{\CRk}[1]{\ensuremath{\mat{C}_{\mathcal{R}_{#1}}}}
+\newcommand{\CBk}[1]{\ensuremath{\mat{C}_{\mathcal{B}_{#1}}}}
+\newcommand{\XE}{\ensuremath{\mat{X}_\mathcal{E}}}
+\newcommand{\XR}{\ensuremath{\mat{X}_\mathcal{R}}}
+\newcommand{\XB}{\ensuremath{\mat{X}_\mathcal{B}}}
+
 \graphicspath{{./images/}}
 
 \usepackage{hyperref}
@@ -191,15 +201,15 @@ consider the operator~\mbox{$T_f\::\:A\longrightarrow A$}, defined by~$T_f([g])=
 It is easily seen that~$T_f$ is
 linear with the property that~$T_f=T_g$ if and only if~$f-g\in I$.
 Since the quotient space~$A$ is finite-dimensional this operation can be
-represented by a matrix~$\mat{M}_f$, which is known as the \emph{action matrix}.
+represented by a matrix~$\mat{M}_\alpha$ known as the \emph{action matrix}.
 Furthermore, we may select a basis for~$A$,~\eg{} a monomial
-basis~$\mathcal{B}=\{[\mat{x}^{\alpha_j}]\}_{j\in J}$,
+basis~$\mathcal{B}=\{[\mat{x}^{\beta_i}]\}_{i=1}^K$,
 typically obtained by (an improved version of)
 Buchberger's algorithm.
-When the action matrix~$\mat{M}_f=(m_{ij})$ acts on the basis elements we obtain a
+When the action matrix~$\mat{M}_\alpha=(m_{ij})$ acts on the basis elements we obtain a
 linear combination of the monomials forming the basis, namely
 \begin{equation}
-    T_f([\mat{x}^{\alpha_j}]) = [f\mat{x}^{\alpha_j}]=\sum_{i\in J}m_{ij}[\mat{x}^{\alpha_i}]\;.
+    T_\alpha([\mat{x}^{\beta_i}]) = [\alpha(\mat{x})\mat{x}^{\beta_i}] = \sum_{j=1}^Km_{ij}[\mat{x}^{\beta_j}]\;.
 \end{equation}
 This implies that,
 % for some $h\in I$
@@ -209,12 +219,12 @@ This implies that,
 % and
 for $\mat{x}\in V(I)$,
 \begin{equation}\label{kappa:eq:action}
-f(\mat{x})\mat{x}^{\alpha_j}=\sum_{i\in J}m_{ij}\mat{x}^{\alpha_i}\;.
+    \alpha(\mat{x})\mat{x}^{\beta_i}=\sum_{j=1}^Km_{ij}\mat{x}^{\beta_j}\;.
 \end{equation}
 By representing the basis~$\mathcal{B}$ with a vector $\mat{b}$, and using the fact
 that~\eqref{kappa:eq:action} must hold for all basis elements, the problem can be reduced to
-\begin{equation}
-f(\mat{x})\mat{b}(\mat{x}) = \mat{M}_f^{\T}\mat{b}(\mat{x}),
+\begin{equation}\label{eq:actionmat}
+    \alpha(\mat{x})\mat{b}(\mat{x}) = \mat{M}_\alpha\mat{b}(\mat{x}),
 \end{equation}
 which we recognise as an eigenvalue problem.
 Let us recapitulate: given a polynomial
@@ -229,12 +239,113 @@ of equations. There are many reasons for this:
 \item due to floating point arithmetic, accumulated round-off errors may reduce performance,
 \item degeneracies for certain instances with real data.
 \end{enumerate*}
-Instead we try to find the action matrix using \emph{elimination templates}, which can
-be done offline. Consider 
-{\color{red}[More here]}
+Instead we try to find the action matrix using \emph{elimination templates}, which encode the
+relevant eliminations without explicitly working with a Gröbner basis.
+We suppress $\mat{x}\in V(I)$ now, as it is implicitly understood.
+Consider the $j$:th row of equation~\eqref{eq:actionmat}. Any way of expressing $[\alpha b_i]$
+corresponds to finding polynomials on the form
+\begin{equation}\label{eq:polys}
+    p_i = \alpha b_i -\sum_{j=1}^Km_{ij}b_{j}\in I,
+\end{equation}
+and since the action matrix is unique\footnote{Since $\mathcal{B}$ is a linear basis over $A$.},
+we only need to find a single polynomial on this form, containing elements from~$\mat{b}$ or the
+expanded set~$\alpha\mat{b}$.
+In order to do so, we augment the original system~\label{kappa:eq:polsys} by multiplying it
+with some monomials, \eg{}
+\begin{equation}\label{kappa:eq:polsys}
+    \begin{aligned}
+    \left.
+    \begin{aligned}
+    f_1(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    f_s(\mat{x}) & = 0, \\
+    \end{aligned}
+    \right\}\text{original}
+    \qquad
+    \left.
+    \begin{aligned}
+    m_1f_1(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    m_1f_s(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    m_\ell f_1(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    m_\ell f_s(\mat{x}) & = 0,
+    \end{aligned}
+    \right\}\text{augmented}
+    \end{aligned}
+\end{equation}
+for some monomials~$m_1,\ldots, m_\ell$. Note that these artificially added equations do not alter
+the corresponding variety~$V$.
+Part of the challenge is to decide which monomials to expand the original system with.
+Now, assuming that the expanded system is sufficiently large, we may express the polynomials
+from~\eqref{eq:polys} linearly and retrieve the sought basis elements. We now turn our attention
+to the latter part.
 
-In~\cite{byrod-phd} it was shown that one does not need a Gröbner basis, but in fact
-a \emph{spanning set} is enough.
+Let the augmented system be represented as~$\mat{CX}=0$ and partition it as follows
+\begin{equation}
+    \begin{bmatrix}
+        \CE &
+        \CR &
+        \CB
+    \end{bmatrix}
+    \begin{bmatrix}
+        \XE \\
+        \XR \\
+        \XB
+    \end{bmatrix}
+    = 0,
+\end{equation}
+where $\XB$ are the basis monomials in~$\mathcal{B}$\footnote{Sometimes we use the so called~\emph{permissible} monomials instead.},
+$\XR$ are the \emph{reducible} monomials who are
+not in~$\mathcal{B}$, but whose image after the multiplication with the action~$\alpha$ is a
+polynomial multiple of some element in~$\mathcal{B}$. Lastly, we have the~\emph{excessive}
+monomials, which are neither in~$\mathcal{B}$ nor $\mathcal{R}$.
+Since we are not interested in the excessive monomials we may eliminate these,
+by reducing $\CE$ to row echelon form
+\begin{equation}
+    \begin{bmatrix}
+        \mat{U}_\mathcal{E}' &
+        \CRk{1}' &
+        \CBk{1}' \\
+        \mat{0} &
+        \CRk{2}' &
+        \CBk{2}'
+    \end{bmatrix}
+    \begin{bmatrix}
+        \XE \\
+        \XR \\
+        \XB
+    \end{bmatrix}
+    = 0\;.
+\end{equation}
+We now discard the top row and concentrate on the second row. Assuming $\CRk{2}'$ is of full rank
+\begin{equation}
+    \begin{bmatrix}
+        \mat{I} &
+        \CRk{2}'^{-1}\CBk{2}'
+    \end{bmatrix}
+    \begin{bmatrix}
+        \XR \\
+        \XB
+    \end{bmatrix}
+    = 0,
+\end{equation}
+hence
+\begin{equation}
+    \XR = -\CRk{2}'^{-1}\CBk{2}'\XB\;.
+\end{equation}
+Now, the reducible monomials can be expressed as a linear combination of the basis elements,
+which is that we were looking for.
+
+% In~\cite{byrod-phd} it was shown that one does not need a Gröbner basis, but in fact
+% a \emph{spanning set} is enough.
+
+\begin{example}
+To illustrate this process see Example 37 (p. 37--38) in Viktor Larsson's PhD thesis.
+\end{example}
+
+
 
 In~\cite{kukelova2008} one of the first automatic generators was proposed.
 This has later been surpassed by~\cite{larsson2017cvpr}, which uses a slightly
@@ -698,32 +809,60 @@ the system $G(Y)  =  0$, instead of the system $F_N(Y\cup X_N) = 0$, is more eff
 \end{quote}
 
 Here is an example of how this strategy can be used.
-\begin{example}
+\begin{example}[*]
 Let us continue from~\cref{ex:Hplanar1}.
 Following the suggested approach proposed by Kukelova~\etal{} we
 consider the ideal generated by
 \mbox{$\lambda \mat{H}-\mat{R}(\mat{q})-\mat{tn}^{T}=0$}, where $\lambda$ is a scale factor,
 and $\mat{t}\cdot\mat{n}=0$. Let it be denoted~$I$,
 then we seek the elimination ideal~$I\cap\K[\mat{H}]$, for some suitable field~$\K$.
-Over a finite field, this can be done using Macaulay2.
-
+Over a finite field, this can be done using Macaulay2. We will do this during the lecture, which
+concludes the offline stage of the proposed elimination strategy.
 This results in the eleven quartic constraints originally found
-in~\cite{wadenback2016} and an additional sixth degree polynomial.\footnote{
+in~\cite{wadenback2016}\footnote{
 These constraints were experimentally obtained by randomly generating points on the manifold defining
 the planar motion compatible homographies.
 In order to be able to work over a finite field, the rotation matrices were constructed
 using Pythagorean triplets, hence integer versions of the problem were obtained. By doing so,
 the coefficients for the polynomials could be found.
 With this approach, however, one cannot rule out the existence of higher order polynomials,
-and thus, sufficiency cannot be proven.}
+and thus, sufficiency cannot be proven.} and an additional sixth degree polynomial.
 
-Using the eleven quartic constraints
+Now, we parameterize the null space of the homography using 2.5-point correspondences, \ie{}
+given three corresponding points $\mat{x}_i \leftrightarrow \mat{x}'_i$ for $i=1,2,3$, we get
+\begin{equation}
+    \mat{x}_i'\times \mat{Hx}_i = 0,
+\end{equation}
+and choosing two linearly independent rows (apart from the third pair, where we only pick one row),
+from which we get a system
+\begin{equation}
+\mat{M}\mat{H} = 0,
+\end{equation}
+where $\mat{M}$ is a $5\times 9$ matrix. Assuming non-degenerate configurations, the matrix $\mat{M}$
+has a four-dimensional null space ant we may write it in terms of the basis elements
+\begin{equation}
+    \mat{H} = \sum_{i=1}^4\lambda_i\mat{H}_i\;.
+\end{equation}
+Note that there is a scale ambiguity, therefore we may lock the scale \eg{} by forcing \mbox{$\lambda_4=1$}.
+Now, this corresponds to steps 3 and 4 of the online stage of the elimination strategy proposed by
+Kukelova~\etal{}. We now use this parameterization of the three unknowns~$\lambda_i$, for $i=1,2,3$
+and insert them in the generators (the eleven quartic equations). This yields a new system
+\begin{equation}
+\begin{aligned}
+    g_1(\lambda_1,\lambda_2,\lambda_3) &= 0, \\
+    &\vdots \\
+    g_{11}(\lambda_1,\lambda_2,\lambda_3) &= 0,
+\end{aligned}
+\end{equation}
+for which the action matrix method is applicable. We will return to this example during the lecture.
 \end{example}
 
-For more examples see~\cite{kukelova-etal-2017-cvpr}.
-During the lecture we will use the example of relative pose with unknown focal length.
+\begin{example}[*]
+We consider the the example of relative pose with unknown focal length,
+from~\cite{kukelova-etal-2017-cvpr}.
+\end{example}
 
-\emph{Practical examples}: \cite{ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
+\emph{Practical examples}: \cite{kukelova-etal-2017-cvpr,ding-etal-2019-iccv,barath-kukelova-iccv-2019,valtonenoernhag-icpram-2019}
 
 \subsection{Beyond Gröbner bases}
 This section is based on~\cite{larsson2018cvpr} and utilizes the fact that one does not
