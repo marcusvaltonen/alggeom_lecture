@@ -743,15 +743,17 @@ we want the focal length to be non-zero in all practical scenarios.
 
 \begin{example}
 Consider~\cref{ex:hidden3}. The system~\eqref{eq:minors} has infinitely many solutions; however,
-these correspond to solutions where~$f=0$. If we saturate~$f$ there are finitely many solutions.
+many of these correspond to solutions where~$f=0$. If we saturate~$f$ there are finitely many solutions.
 \end{example}
 
-The automatic generator supports saturating ideal w.r.t.\@ a monomial. In many places one might
+The automatic generator supports saturating an ideal w.r.t.\@ a monomial. In many situations, one might
 want to remove more complex degeneracies, \eg{} one might want to enforce that a homography~$\mat{H}$
-is invertible, hence~$\det{\mat{H}}\neq 0$. If you want to saturate a polynomial $p(\mat{x}$ this
+is invertible, hence~$\det{\mat{H}}\neq 0$. If you want to saturate a polynomial~$f$ this
 can still be accomplished by introducing a new
 variable~$x_0$ as well as the constraint~$x_0-f(\mat{x}) = 0$.
-Another way of eliminating certain solutions is by using the \emph{Rabinowitsch trick},
+Another way of eliminating certain solutions is by using the \emph{Rabinowitsch trick}\footnote{This
+is often used when proving Hilbert's Nullstellensatz (\cf{} Theorem 2, p. 173, in~\cite{cox}) from the weak
+Nullstellensatz.},
 which is to introduce~$x_0f(\mat{x})-1 = 0$.
 We show in an example that using saturation produces smaller elimination templates.
 
