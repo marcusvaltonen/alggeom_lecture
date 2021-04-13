@@ -402,6 +402,10 @@ have a way to efficiently remove solutions for which~$f_s(x) =0$.
 Allowing saturation in the process of generating elimination templates was introduced
 in~\cite{larsson2017iccv}.
 
+\begin{example}
+See Example 2.4 (p. 67--69) in~\cite{larsson-phd}.
+\end{example}
+
 \subsection{Symmetries}
 This is based on~\cite{larsson2016eccv}, and is perhaps easiest understood by looking
 at Examples 3.12--3.13 (p. 89--91) in~\cite{larsson-phd}.
@@ -829,25 +833,27 @@ is often used when proving Hilbert's Nullstellensatz (\cf{} Theorem 2, p. 173, i
 Nullstellensatz.},
 which is to introduce~$x_0f(\mat{x})-1 = 0$.
 We show in an example that using saturation produces smaller elimination
-templates.\footnote{Empirically, this is generaly the case. One argument for why this is the case,
+templates.\footnote{Empirically, this is often true. One argument for why this is the case,
 is because the auxiliary variable $x_0$ is linear in the equation and therefore easier to eliminate.}
-
-\begin{example}[*]
-Ah
-\end{example}
-
 Furthermore, one may exclude the auxilliary variable~$x_0$ from the quotient ring basis
 (when saturating polynomials).
 
 \begin{example}[*]
-Ah 2
+We return to~\cref{ex:hidden4} and show how to remove the one-dimensional family of solutions
+corresponding to null vectors with last element equal to zero.
+{\color{red} Fix this example!}
+
+We will also use a basis without
+the auxiliary variable.
 \end{example}
 
 \subsection{Using symmetries}
-We use the example from~\cite{larsson2016eccv}.
+This is based on~\cite{larsson2016eccv}; however, we will not discuss it during the lecture,
+to limit the scope slightly; however, I feel that the document would be incomplete without
+mentioning it. Hence, there are a few example code snippets available for you to try on your own.
 
 \begin{example}[*]
-Twofold symmetries.
+Twofold symmetries using quaternion parameterization (see Section~3.4 in~\cite{larsson-phd}).
 \end{example}
 
 \pexamples~\cite{larsson-etal-cvpr-2018,wu-cvpr-2015}.
