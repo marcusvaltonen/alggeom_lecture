@@ -577,7 +577,7 @@ m_{32}xz + m_{32}x + m_{33}yz + m_{34}y + m_{35}z^2 + m_{36}z + m_{37} &= 0, \\
 where~$m_{ij}\in\C$ are generic coefficients.
 By looking at a specific (non-degenerate) instance using Macaulay2
 (or by using the~\emph{mixed cell method}) we see that there are in
-general four solutions to this problem (including the trivial zero solution). One could use the action matrix method to construct an
+general four solutions to this problem. One could use the action matrix method to construct an
 elimination template; however, since the system is linear in $x$ and $y$ it can be rewritten as
 \begin{equation}\label{eq:specialnullvector}
 \mat{M}(z)
@@ -841,10 +841,32 @@ Furthermore, one may exclude the auxilliary variable~$x_0$ from the quotient rin
 \begin{example}[*]
 We return to~\cref{ex:hidden4} and show how to remove the one-dimensional family of solutions
 corresponding to null vectors with last element equal to zero.
-{\color{red} Fix this example!}
+First, since~$\mat{M}$ in~\eqref{eq:pritts-M} is of size~$7\times 4$ there are $\binom{7}{4}=35$
+different minors; hence, we have reduced the system to 35 equations in four unknowns.
+If one would try to find a Gröbner basis to such an instance, however, Macaulay2 would
+cast an error saying:~\texttt{module given is not finite over the base}. This is because
+there is a one-dimensional family of null vectors with last element equal to zero. To remove
+these we may saturate any of the $3\times 3$ minors from the first three columns of~$\mat{M}$.
+Following the suggestions by the authors, we choose the one with lowest degree, corresponding
+to the two first rows and the last row
+\begin{equation}
+    f_s =
+        \begin{vmatrix}
+        m_{11} & m_{12} & 0\\
+        m_{21} & m_{22} & 0\\
+        l_1 & l_2 &   1
+        \end{vmatrix}
+        =
+        m_{11}m_{22}-m_{12}m_{21}\;.
+\end{equation}
+We add an auxiliary variable $x_{\te{aux}}$ and  the equation~$x_{\te{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$. This gives us 36 equations in five unknowns. We will return to this example
+during the lecture.
 
-We will also use a basis without
-the auxiliary variable.
+It turns out that the elimination template is of size~$22\times 24$.\footnote{Note that it is not
+the same as in the paper---we are using a slightly different approach. But, potentially, we have
+a better solver as the state-of-the-art solver in~\cite{pritts2017} is of size~$24\times 26$.}
+This assumes that we use a basis without the auxiliary variable. Using the Rabinowitsch trick
+instead we get an elimination template of size $59\times 61$.
 \end{example}
 
 \subsection{Using symmetries}
@@ -888,6 +910,7 @@ unknowns that appear in equations of higher degree only. We fix the following no
 $|F_L|=m_L$, $|F_N|=mN$, $|X_L|=n_L$, $|X_N|=n_N$, which means that $m=m_L+m_N$ and $n=n_L+n_N$.
 % Now, the idea of our new elimination method is to elim-inate all unknownsXNfrom non-linear equationsFN. Thenon-linear equationsFNdo not depend on image measure-ments, and are the same for all instance of a given problem.Therefore, we can perform this elimination off-line, in thepre-processing step. This elimination may be computation-ally demanding. However, since we do this only once in thepre-processing step, it is not an issue during the solver runtime. Next, we further eliminatemLunknowns fromXLusingmLlinear equations fromFL. This is done on-linebut it is fast since solving a small linear system is easy.
 In more detail, our method performs the following steps.
+\pagebreak
 \paragraph{Offline:}
 \begin{enumerate}
     \item Let $I = \langle F_N \rangle$ and consider the elimination
