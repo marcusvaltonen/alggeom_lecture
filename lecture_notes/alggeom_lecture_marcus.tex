@@ -138,13 +138,13 @@ In this lecture, we will discuss how to optimize the computations, both for spee
 accuracy, given a polynomial system of equations with generic coefficients. Such problems are very
 frequent in computer vision, and many of the examples will be from this field of research.
 I will mostly rely on examples; however,
-the necessary theory is briefly discussed in this document, which you are encourage to read before
+the necessary theory is briefly discussed in this document, which you are encouraged to read before
 the lecture. The theory is not meant to be complete, and I will refer you to other sources for
 each topic, and try to list actual publications using the particular method.
 
-For the practical part we will use the
+For the practical part, we will use the
 automatic solver by Larsson~\etal{}, which you should install and get accustomed to prior
-to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip}, and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
+to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip} and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
 Apart from the course literature, you are also referred to Viktor Larsson's PhD
 thesis for a deeper understanding of the content in this lecture.
 Examples marked with (*) have a code snippet associated with them and will be discussed during the
@@ -236,14 +236,14 @@ system of equations, use Buchberger's algorithm to obtain a Gröbner basis. Crea
 action matrix and compute the eigenvalues and eigenvectors to extract the solutions.
 
 \subsection{Elimination templates}
-In practice we do not compute a Gröbner basis everytime we want to solve a polynomial system
+In practice, we do not compute a Gröbner basis every time we want to solve a polynomial system
 of equations. There are many reasons for this:
 \begin{enumerate*}[label={(\roman*)}]
 \item it is computationally expensive,
-\item due to floating point arithmetic, accumulated round-off errors may reduce performance,
+\item due to floating-point arithmetic, accumulated round-off errors may reduce performance,
 \item degeneracies for certain instances with real data.
 \end{enumerate*}
-Instead we try to find the action matrix using \emph{elimination templates}, which encode the
+Instead, we try to find the action matrix using \emph{elimination templates}, which encode the
 relevant eliminations without explicitly working with a Gröbner basis.
 We suppress $\mat{x}\in V(I)$ now, as it is implicitly understood.
 Consider the $i$:th row of equation~\eqref{eq:actionmat}. Any way of expressing $[\alpha b_i]$
@@ -340,10 +340,7 @@ hence
     \XR = -\CRk{2}'^{-1}\CBk{2}'\XB\;.
 \end{equation}
 Now, the reducible monomials can be expressed as a linear combination of the basis elements,
-which is that we were looking for.
-
-% In~\cite{byrod-phd} it was shown that one does not need a Gröbner basis, but in fact
-% a \emph{spanning set} is enough.
+which is what we were looking for.
 
 \begin{example}
 To illustrate this process see Example 37 (p. 37--38) in Viktor Larsson's PhD thesis.
@@ -407,7 +404,7 @@ See Example 2.4 (p. 67--69) in~\cite{larsson-phd}.
 \end{example}
 
 \subsection{Symmetries}
-This is based on~\cite{larsson2016eccv}, and is perhaps easiest understood by looking
+This is based on~\cite{larsson2016eccv} and is perhaps easiest understood by looking
 at Examples 3.12--3.13 (p. 89--91) in~\cite{larsson-phd}.
 In short, by exploiting symmetries the corresponding eigenvalue problem (part of the
 elimination template) is block-diagonal; since the eigenvalues of a block-matrix is
@@ -456,8 +453,8 @@ The homography matrix can be made unique by imposing $\det{\mat{H}}=1$.
 
 Note that there are five degrees of freedom in the homography---two translational components,
 the fixed angles $\psi$ and $\theta$, and the non-fixed angle~$\phi$. Therefore, 2.5-point
-correspondences is necessary in the minimal configutation (remember that the DLT equations yield
-two linearly indepdentend equations for each pair of corresponding points).
+correspondences are necessary for the minimal configuration (remember that the DLT equations yield
+two linearly independent equations for each pair of corresponding points).
 
 \emph{Solver 1}: We use~\eqref{eq:Hplanar} to parameterize the planar motion compatible
 homography~$\mat{H}$ and use 2.5-points to get five equations. Note that a homography about the
@@ -598,7 +595,7 @@ where
 \end{bmatrix}\;.
 \end{equation}
 In conclusion, we seek the one-dimensional nullspace of~$\mat{M}(z)$. Specifically, we want
-the normalized null vector with last element equal to one. This means that $\mat{M}(z)$ must
+the normalized null vector with the last element equal to one. This means that $\mat{M}(z)$ must
 be rank deficient and therefore $\det(\mat{M}(z))=0$. Computing this gives us a
 quartic polynomial in~$z$
 \begin{equation}
@@ -833,21 +830,21 @@ is often used when proving Hilbert's Nullstellensatz (\cf{} Theorem 2, p. 173, i
 Nullstellensatz.},
 which is to introduce~$x_0f(\mat{x})-1 = 0$.
 We show in an example that using saturation produces smaller elimination
-templates.\footnote{Empirically, this is often true. One argument for why this is the case,
+templates.\footnote{Empirically, this is often true. One argument for why this is the case
 is because the auxiliary variable $x_0$ is linear in the equation and therefore easier to eliminate.}
-Furthermore, one may exclude the auxilliary variable~$x_0$ from the quotient ring basis
+Furthermore, one may exclude the auxiliary variable~$x_0$ from the quotient ring basis
 (when saturating polynomials).
 
 \begin{example}[*]
 We return to~\cref{ex:hidden4} and show how to remove the one-dimensional family of solutions
-corresponding to null vectors with last element equal to zero.
+corresponding to null vectors with the last element equal to zero.
 First, since~$\mat{M}$ in~\eqref{eq:pritts-M} is of size~$7\times 4$ there are $\binom{7}{4}=35$
 different minors; hence, we have reduced the system to 35 equations in four unknowns.
 If one would try to find a Gröbner basis to such an instance, however, Macaulay2 would
 cast an error saying:~\texttt{module given is not finite over the base}. This is because
 there is a one-dimensional family of null vectors with last element equal to zero. To remove
 these we may saturate any of the $3\times 3$ minors from the first three columns of~$\mat{M}$.
-Following the suggestions by the authors, we choose the one with lowest degree, corresponding
+Following the suggestions by the authors, we choose the one with the lowest degree, corresponding
 to the two first rows and the last row
 \begin{equation}
     f_s =
@@ -865,8 +862,8 @@ during the lecture.
 It turns out that the elimination template is of size~$22\times 24$.\footnote{Note that it is not
 the same as in the paper---we are using a slightly different approach. But, potentially, we have
 a better solver as the state-of-the-art solver in~\cite{pritts2017} is of size~$24\times 26$.}
-This assumes that we use a basis without the auxiliary variable. Using the Rabinowitsch trick
-instead we get an elimination template of size $59\times 61$.
+This assumes that we use a basis without the auxiliary variable. Using the Rabinowitsch trick,
+we instead get an elimination template of size $59\times 61$.
 \end{example}
 
 \subsection{Using symmetries}
@@ -891,11 +888,10 @@ image measurements. For example, the epipolar constraint generates linear equati
 on the input measurements while the singularity of the fundamental matrix results in the non-linear
 equation~$\det(F) = 0$, which does not depend on the measurements. Here we present a new ``clever''
 elimination strategy, which usually allows us to do more computation in the off-line stage and less
-computation in the on-line stage.
+computation in the online stage.
 Throughout this section we assume that the nonlinear equations~$F_N$ do not depend on image
 measurements, \ie{} for all instances these equations are the same.
 [\ldots]
-%Later, in Sec-tion3.3, we will show how to deal with problems whenFNcontains equations that depend on image measurements. 
 Let us now describe our new elimination strategy. We first divide the input equations~$F$ into the
 linear equations~$F_L$ and the non-linear equations~$F_N$. Moreover, we divide the $n$ given unknowns
 $X$ into two subsets:
@@ -905,10 +901,9 @@ $X$ into two subsets:
         X_N &= X\setminus X_L.
     \end{aligned}
 \end{equation}
-The set $X_L$ contains the unknowns that appear in linearequations. The set $X_N$ contains the
+The set $X_L$ contains the unknowns that appear in linear equations. The set $X_N$ contains the
 unknowns that appear in equations of higher degree only. We fix the following notation:
 $|F_L|=m_L$, $|F_N|=mN$, $|X_L|=n_L$, $|X_N|=n_N$, which means that $m=m_L+m_N$ and $n=n_L+n_N$.
-% Now, the idea of our new elimination method is to elim-inate all unknownsXNfrom non-linear equationsFN. Thenon-linear equationsFNdo not depend on image measure-ments, and are the same for all instance of a given problem.Therefore, we can perform this elimination off-line, in thepre-processing step. This elimination may be computation-ally demanding. However, since we do this only once in thepre-processing step, it is not an issue during the solver runtime. Next, we further eliminatemLunknowns fromXLusingmLlinear equations fromFL. This is done on-linebut it is fast since solving a small linear system is easy.
 In more detail, our method performs the following steps.
 \pagebreak
 \paragraph{Offline:}
@@ -959,7 +954,7 @@ the planar motion compatible homographies.
 In order to be able to work over a finite field, the rotation matrices were constructed
 using Pythagorean triplets, hence integer versions of the problem were obtained. By doing so,
 the coefficients for the polynomials could be found.
-With this approach, however, one cannot rule out the existence of higher order polynomials,
+With this approach, however, one cannot rule out the existence of higher-order polynomials,
 and thus, sufficiency cannot be proven.} and an additional sixth degree polynomial.
 
 Now, we parameterize the null space of the homography using 2.5-point correspondences, \ie{}
@@ -992,7 +987,7 @@ for which the action matrix method is applicable. We will return to this example
 \end{example}
 
 \begin{example}[*]
-We consider the the example of relative pose with unknown focal length,
+We consider the example of relative pose with unknown focal length,
 from~\cite{kukelova-etal-2017-cvpr}.
 \end{example}
 
@@ -1009,13 +1004,13 @@ This can lead to smaller elimination template sizes.
 See also~Section 1.3.3 in~\cite{larsson-phd}.
 Ding~\etal{} transformed their problem to a \emph{polynomial eigenvalue problem} (PEP)
 to increase both numerical accuracy and speed \cite{ding-etal-tpami-2020,ding-etal-cvpr-2020}.
-Furthermore, they prove a result similar to saturation in this setting---namely how to reomve
+Furthermore, they prove a result similar to saturation in this setting---namely how to remove
 zero (generalized) eigenvalues by row and column operations prior to solving the PEP. This makes the dimension
 of the coefficient matrices of the PEP smaller, which benefits the overall performance.
 
 \subsection{The latest on resultant based methods}
 In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators using
-resultant-based methods are proposed. Major stregths compared to the action matrix method is
+resultant-based methods are proposed. Major strengths compared to the action matrix method is
 in terms of numerical stability.
 
 \clearpage
