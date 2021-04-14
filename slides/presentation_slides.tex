@@ -1,0 +1,364 @@
+\documentclass[aspectratio=169]{beamer}
+\usepackage{animate}
+
+% Show notes
+\usepackage{pgfpages}
+%\setbeameroption{show notes on second screen}
+
+\usepackage[utf8]{inputenc}
+
+\setbeamertemplate{note page}
+{%
+  % Header box
+  \insertvrule{.27\paperheight}{white!90!black}
+  \vskip-0.286\paperheight
+  \begin{minipage}{0.4\textwidth}
+    \insertslideintonotes{0.25}%
+  \end{minipage}
+  \begin{minipage}{0.55\textwidth}
+    {\textbf \insertshortframetitle}
+  \end{minipage}
+
+  % Title
+  \begin{minipage}{0.88\paperwidth}
+  \insertnote
+  \end{minipage}
+}
+
+\newcommand{\timenote}[3]{
+    \note{
+        \vskip-0.1\paperheight
+        \hspace{4.44cm}Time: #1 -- #2 min
+        \vskip0.086\paperheight
+        {\scriptsize #3}}
+}
+
+\usepackage{mathtools}
+
+
+\usepackage[]{algorithm2e}
+\usepackage{bm}
+\renewcommand{\vec}[1]{%
+  \ifcat\noexpand#1\relax % check if the argument is a control sequence
+    \bm{#1} % probably Greek
+  \else
+    \mathbf{#1} % single character
+  \fi
+}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{changepage}
+\usepackage{mathrsfs}  % Used for mathscr 'L'
+\usepackage{gensymb}  % degree sign
+\usepackage{bm}
+\usepackage{bbm}
+\renewcommand{\epsilon}{\varepsilon}
+\usepackage{cancel}
+%\usepackage{breqn}
+%\usepackage{enumitem}
+\usepackage{booktabs}
+%\usepackage[table]{xcolor}
+\usepackage{multirow}
+
+\usepackage{empheq}
+%\usepackage[most]{tcolorbox}
+%\newtcbox{\mymath}[1][]{%
+%    nobeforeafter, math upper, tcbox raise base,
+%    enhanced, colframe=blue!30!black,
+%    colback=blue!30, boxrule=1pt,
+%    #1}
+%\tcbset{
+%    enhanced,
+%    breakable,
+%    attach boxed title to top center,
+%    top=1mm,
+%    coltitle=black,
+%    beforeafter skip=\baselineskip,
+%}
+
+\newcommand{\etal}{\emph{et~al.}}
+
+% Graphics
+\graphicspath{{../images/}{../matlab/}{../../camera_ready/images/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.eps}
+
+\newcommand{\FULLSCREEN}{0.65\textwidth}
+
+\makeatletter
+\newcommand{\vast}{\bBigg@{4}}
+\newcommand{\Vast}{\bBigg@{5}}
+\newcommand{\VAST}{\bBigg@{16}}
+\newcommand{\VAst}{\bBigg@{14}}
+\makeatother
+
+\usepackage[export]{adjustbox}[2011/08/13]
+
+\newcommand{\cammat}[2]{\left[#1\;|\;#2\right]}
+\newcommand{\R}{\ensuremath{\mathbbm{R}}}
+\newcommand{\K}{\ensuremath{\mathbbm{K}}}
+\newcommand{\C}{\ensuremath{\mathbbm{C}}}
+\renewcommand{\phi}{\varphi}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\nulldim}{nulldim}
+\DeclareMathOperator{\adj}{adj}
+\newcommand{\mat}[1]{\bm{#1}}
+\newcommand{\nullspace}[1]{\mathcal{N}{#1}}
+\newcommand{\lr}{\ensuremath{\mathrm{\quad\Leftrightarrow\quad}}}
+\newcommand{\A}{\ensuremath{\mathcal{A}}}
+\newcommand{\N}{\ensuremath{\mathcal{N}}}
+\newcommand{\reg}{\ensuremath{\mathcal{R}}}
+\newcommand{\Real}{\ensuremath{\mathbbm{R}}}
+\newcommand{\Z}{\ensuremath{\mathbbm{Z}}}
+\newcommand{\Tp}{T}
+\newcommand{\norm}[1]{\|#1\|}
+\newcommand{\frobnorm}[1]{\norm{#1}_F}
+\newcommand{\fr}[2]{\frac{#1}{#2}}
+\newcommand{\pf}[2]{\frac{\partial #1}{\partial #2}}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\atan}{atan2}
+\DeclareMathOperator{\rank}{rank}
+
+\newcommand{\T}{T}
+\usepackage{setspace}
+%\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+%\usepackage{caption}
+\usepackage{subcaption}
+
+\def\thicknesslineplot{thick}
+\def\thicknesshack{0.085cm}
+\def\mythickness{ultra thick}
+\def\thicknesslineplotTwo{thick}
+\def\mythicknesssmall{thick}
+\def\thicknesslineplotThree{very thick}
+\def\boxplotheight{8.5cm}
+\def\boxplotwidth{7.5cm}
+\def\boxplotheightreal{3.5cm}
+
+\definecolor{gtcolor}{rgb}{0,0,0}
+\definecolor{ourcolor}{rgb}{0,0.4,0.6}
+\definecolor{fitzgibboncolor}{rgb}{0,0.7,0.7}
+\definecolor{dingcolor}{rgb}{1,0.2,0.3}
+\definecolor{kukelovacolor}{rgb}{0,0.6,0}
+\definecolor{bougnouxcolor}{rgb}{0,0.7,0.7}
+\definecolor{valtonenoernhagcolor}{rgb}{0.7,0,0.7}
+\definecolor{inliercolor}{rgb}{0.2,1,0.1}
+\definecolor{outliercolor}{rgb}{1,0,0}
+\definecolor{smallcolor1}{rgb}{0.,0,0}
+\definecolor{smallcolor2}{rgb}{0,0,0}
+\definecolor{hiddencolor}{rgb}{0.1,0.9,0.1}
+\definecolor{elimcolor}{rgb}{0.6,0.1,0.6}
+
+\makeatletter
+\DeclareRobustCommand\eg{\emph{e.g}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\etal{\emph{et~al}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\ie{\emph{i.e}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\cf{\emph{cf}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\NB{\emph{N.B}\@ifnextchar.{}{.\@}}
+\DeclareRobustCommand\wrt{w.r.t\@ifnextchar.{}{.\@}}
+\makeatother
+
+\newcommand{\sing}[1]{\vec{\sigma}{#1}}
+\usepackage{standalone}
+\pgfplotsset{
+    table/search path={../../graphs},
+}
+
+\makeatletter
+\@namedef{ver@everyshi.sty}{} %Prevents some error caused by tikz, has to be agter xcolor
+\makeatother
+\usepackage{tikz}  % Used for problem geometry picture
+\usepackage{pgfplots}
+\usepackage{tikzpagenodes}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{arrows.meta}
+\tikzset{%
+  thick arrow/.style={
+     -{Triangle[angle=90:2pt 1.5]},
+     line width=4mm,
+     draw=gray,
+     draw opacity=0.7,
+  },
+}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{shapes.misc, positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{calc}
+
+\pgfdeclarelayer{foreground}  % Used for correct opacity
+\pgfdeclarelayer{background}  % Used for correct opacity
+\pgfsetlayers{background,main,foreground}
+
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\usepackage{environ}  % Used for scaletikzpicturewidth
+\makeatletter
+\newsavebox{\measure@tikzpicture}
+\NewEnviron{scaletikzpicturetowidth}[1]{%
+  \def\tikz@width{#1}%
+  \def\tikzscale{1}\begin{lrbox}{\measure@tikzpicture}%
+  \BODY
+  \end{lrbox}%
+  \pgfmathparse{#1/\wd\measure@tikzpicture}%
+  \edef\tikzscale{\pgfmathresult}%
+  \BODY
+}
+\makeatother
+
+\tikzset{add reference/.style={insert path={%
+coordinate [pos=0,xshift=-0.5\pgflinewidth,yshift=-0.5\pgflinewidth] (#1 south west)
+coordinate [pos=1,xshift=0.5\pgflinewidth,yshift=0.5\pgflinewidth]   (#1 north east)
+coordinate [pos=.5] (#1 center)
+(#1 south west |- #1 north east)     coordinate (#1 north west)
+(#1 center     |- #1 north east)     coordinate (#1 north)
+(#1 center     |- #1 south west)     coordinate (#1 south)
+(#1 south west -| #1 north east)     coordinate (#1 south east)
+(#1 center     -| #1 south west)     coordinate (#1 west)
+(#1 center     -| #1 north east)     coordinate (#1 east)
+}}}
+
+\usepackage{listings}
+\usepackage{multimedia}
+\usepackage{graphicx}
+
+\usepackage{colortbl}
+\definecolor{cA}{RGB}{212, 237, 244}%
+\definecolor{cAa}{RGB}{192, 217, 224}%
+\definecolor{cB}{RGB}{237, 212, 244}%
+\definecolor{cC}{RGB}{244, 237, 212}%
+\definecolor{darkgreen}{RGB}{0, 170, 0}
+\newcommand\colorA{\cellcolor{cA}}
+\newcommand\colorAa{\cellcolor{cAa}}
+\newcommand\colorB{\cellcolor{cB}}
+\newcommand\colorC{\cellcolor{cC}}
+\newcommand{\ai}{{\color{darkgreen}a_i}}
+\newcommand{\Twoai}{{\color{darkgreen}2a_i}}
+\newcommand{\bi}{{\color{orange}b_i}}
+
+\DeclareMathOperator{\syz}{Syz}
+\DeclareMathOperator{\lt}{LT}
+\DeclareMathOperator{\sat}{Sat}
+
+% Matlab code
+\usepackage[numbered,framed]{matlab-prettifier}
+\lstset{
+style              = Matlab-editor,
+%  basicstyle         = \mlttfamily,
+%  escapechar         = ",
+%  mlshowsectionrules = true,
+}
+
+\usepackage{tikz-3dplot}
+\usetikzlibrary{calc,arrows.meta,positioning,backgrounds}
+\pgfdeclarelayer{foreground}  % Used for correct opacity
+\pgfdeclarelayer{background}  % Used for correct opacity
+\pgfsetlayers{background,main,foreground}
+
+\usetheme{metropolis}           % Use metropolis theme
+\title{\vspace{0.3cm}{\small Practical aspects of solving a system of polynomial equations}\vspace{-0.5cm}}
+\author{\vspace{-0.3cm}Marcus Valtonen Örnhag}
+\institute{%
+    Centre for Mathematical Sciences, Lund University}
+\date{\vspace{0.2cm}{\footnotesize\emph{Workshop in Algebraic Geometry, May 2021}}}
+\titlegraphic{%
+    \includegraphics[height=1.7cm]{LundUniversity_C2line_CMYK}
+}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+\begin{frame}{Introduction}
+Today's tutorial/workshop will contain:
+\begin{itemize}
+\item A brief theoretical walkthrough,
+\item Tips and tricks on how to practically speed-up your solver,
+\item Hands-on experience with the automatic Gröbner basis generator,
+\item A group exercise followed by a discussion session.
+\end{itemize}
+\end{frame}
+
+\section{Theory}
+\begin{frame}{Recap: Polynomial systems of equations}
+Using multi-index notation,
+let~$\mat{x^{\alpha}}$ denote a \emph{monomial} of degree $|\mat{\alpha}|$.
+Our main goal is to solve a polynomial system of equations
+\begin{equation}\label{kappa:eq:polsys}
+    \begin{aligned}
+    f_1(\mat{x}) & = 0, \\
+                 & \hspace{0.575em} \vdots \\
+    f_s(\mat{x}) & = 0,
+    \end{aligned}
+\end{equation}
+where each polynomial equation can be expressed
+as~$f=\sum_{\mat{\alpha}}c_{\mat{\alpha}}\mat{x^\alpha}$.
+
+\end{frame}
+
+\begin{frame}{Recap: The toolbox}
+\begin{itemize}
+\item  The set of all solutions to~\eqref{kappa:eq:polsys} is called an \emph{affine variety}, and is denoted
+$\mat{V}(f_1,\ldots,f_s)\subset\C$.
+\item An \emph{ideal} $I\subset\C[\mat{x}]$ is an additive group satisfying the \emph{absorption property},~\ie{}~if~$f\in I$ and $h\in\C[\mat{x}]$ then $hf\in I$. Moreover, given a set of polynomials $f_1,\ldots,f_s\in\C[\mat{x}]$
+we consider the ideal
+\begin{equation}
+\langle f_1,\ldots,f_s\rangle = \left\{\sum_{i=1}^sh_if_i\;:\;h_1,\ldots,h_s\in\C[\mat{x}]\right\},
+\end{equation}
+which we will refer to as the \emph{ideal generated by} $f_1,\ldots,f_s$.
+
+\end{itemize}
+Here~$\C[\mat{x}]$ denotes the set
+of polynomials in~$\mat{x}$ with coefficients in $\C$.
+\end{frame}
+
+
+\begin{frame}{Recap: The toolbox (cont.)}
+
+\begin{itemize}
+\item The \emph{Hilbert Basis Theorem} states that every ideal of $\C[\mat{x}]$ is
+finitely generated, \ie{} given an ideal~$I\subset\C[\mat{x}]$ there exist
+$f_1,\ldots,f_s\in\C[\mat{x}]$ such that $I=\langle f_1,\ldots,f_s\rangle$.
+\item The polynomial system of equations~\eqref{kappa:eq:polsys} is defined by the
+generated ideal; however, the basis is in general not unique.
+\end{itemize}
+
+\alert{Solution}: Impose a \emph{monomial ordering} to have a unique representation.
+\end{frame}
+
+\begin{frame}{Recap: The toolbox (cont.)}
+
+\begin{itemize}
+\item The \emph{leading term} (\wrt{} the monomial ordering) is well-defined. We denote it~$\lt(\cdot)$.
+\item For an ideal $I$ define $\lt(I)\coloneqq\{\lt(f)\;:\;f\in I\}$.
+\item A \emph{Gröbner basis} is a finite subset \mbox{$\mat{G}=\{g_1,\ldots,g_t\}\subset I$}
+satisfying $\langle\lt(g_1),\ldots,\lt(g_t)\rangle=\lt(I)$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Recap: Why is all this necessary?}
+How does this help us solve the original system?
+
+$\quad\longrightarrow\quad$ We can compute a Gröbner basis efficiently using~\emph{Buchberger's algorithm}.
+\end{frame}
+
+\begin{frame}{Theory}
+
+\begin{columns}
+    \begin{column}{0.35\textwidth}
+    \end{column}%
+    \begin{column}{0.65\textwidth}
+%        \includestandalone[width=0.67\linewidth]{tikz/prob_geom04}
+    \end{column}
+\end{columns}
+
+\end{frame}
+
+\end{document}
