@@ -116,6 +116,9 @@
 \titleformat*{\paragraph}{\itshape\mdseries}
 \newcommand{\pexamples}{\paragraph{Practical examples:}}
 
+% Fix apalike
+\usepackage[square]{natbib}
+
 %----------------------------------------------------------------------------------------
 %   TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -146,7 +149,7 @@ For the practical part, we will use the
 automatic solver by Larsson~\etal{}, which you should install and get accustomed to prior
 to the lecture. The solver is available at~\url{http://people.inf.ethz.ch/vlarsson/misc/autogen_v0_5.zip} and requires Macaulay2 to be installed. If you want to use C++ (which greatly decreases the computation time) you will need to install the Eigen library as well.\footnote{There is also a wrapped version by Bo Li~\url{https://github.com/prclibo/gaps}, that you might prefer.}
 Apart from the course literature, you are also referred to Viktor Larsson's PhD
-thesis for a deeper understanding of the content in this lecture.
+thesis for a deeper understanding of the content in this lecture~\cite{larsson-phd}.
 Examples marked with (*) have a code snippet associated with them and will be discussed during the
 lecture in more detail.
 
