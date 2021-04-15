@@ -600,13 +600,84 @@ defined as
 \begin{frame}{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
-        \textbf{Example:} Three views with known rotation axis.
+        \textbf{Example:} Three views with known rotation axis.\\[8mm]
+        \begin{equation*}
+            \begin{aligned}
+                \mat{P}_1 &= [\mat{I}\;|\;\mat{0}] \\
+                \mat{P}_2 &= [\mat{R}(\theta_2,\,{\color{red}\mat{v}})\;|\;\mat{t}_2] \\
+                \mat{P}_3 &= [\mat{R}(\theta_3,\,{\color{red}\mat{v}})\;|\;\mat{t}_3]
+            \end{aligned}
+        \end{equation*}\\[8mm]
+        Minimal case: One point and two lines.
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
     \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        Choose a coordinate system in which~$\mat{v}=(0,\,1,\,0)$.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+    \end{column}
+\end{columns}
+
+\end{frame}
+
+\section{Group exercise}
+
+\begin{frame}{Warmup}
+\textbf{Relative pose with one calibrated camera and one with unknown focal length}\\[8mm]
+The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
+\begin{equation*}
+\begin{aligned}
+    \mat{x}'_i\mat{F}\mat{x}_i &= 0, &i=1,\ldots,6\\
+    \det(\mat{E}) &= 0, &\\
+    2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
+\end{aligned}
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Problem 1}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Three (calibrated) cameras on a line}\\[8mm]
+        \begin{itemize}
+            \item How to parameterize?
+            \item Which are the minimal cases?
+        \end{itemize}
+    \vspace{8mm}
+    \footnotesize{(You may choose how many degrees of freedom you have in the rotation)}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_line}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Problem 2}
+\textbf{Panoramic stitching with a smartphone}\\[2mm]
+Assume only rotation $\longrightarrow$ a homography~$\mat{H}$. Smartphones have an
+IMU, hence a common reference direction exists. Then
+\begin{equation*}
+    \mat{H} = \mat{K}_2\mat{R}_2^\T\mat{R}_y\mat{R}_1\mat{K}_1^{-1},
+\end{equation*}
+where $\mat{R}_1$ and $\mat{R}_2$ is obtained from the IMU data. $\mat{R}_y$ is
+a rotaiton about the $y$-axis.
+Decide which case you want to look at
+\begin{itemize}
+    \item Focal length is unknown but the same,
+    \item Focal length is unknown and possibly varying,
+    \item Focal length and radial distortion parameter are unknown but the same,
+    \item Focal length and radial distortion parameter are unknown and possibly varying.
+\end{itemize}
 \end{frame}
 
 \end{document}
