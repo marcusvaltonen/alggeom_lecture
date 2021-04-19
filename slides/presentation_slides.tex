@@ -366,7 +366,7 @@ $\quad\longrightarrow\quad$ We can compute a Gröbner basis efficiently using~\e
 Assume zero-dimensional ideals, \ie{} finitely many solutions to the original system.
 \begin{itemize}
 \item Define the \emph{coset} $[f] \coloneqq \{f+h\;|\;h\in I\}$.
-\item The linear operator $T_f\::\:\C[\mat{x}]/I\longrightarrow\C[\mat{x}]/I$, defined as $T_g([g])=[fg]$,
+\item The linear operator $T_f\::\:\C[\mat{x}]/I\longrightarrow\C[\mat{x}]/I$, defined as $T_f([g])=[fg]$,
 satisfies $T_f=T_g$ iff $f-g\in I$.
 % \item The quotient space $\C[\mat{x}]/I$ is finite dimensional if the original system of
 % equations have finitely many solutions, hence
@@ -395,7 +395,7 @@ Let $\mat{b}$ represent the basis~$\mathcal{B}$ (as a vector), then we have an \
 For any practical applications in computer vision, robotics and neighboring fields:
 \begin{itemize}
 \item We need fast or even real-time performance,
-\item The input is contaminated with noise. $\longrightarrow$ Several different inputs are
+\item The input is contaminated with noise $\longrightarrow$ Several different inputs are
 required for robustness.
 \end{itemize}
 
@@ -444,7 +444,7 @@ Any way of expressing $[\alpha b_i]$ reduces to find a polynomial
     p_i = \alpha b_i -\sum_{j=1}^Km_{ij}b_{j}\in I\;.
 \end{equation}
 \alert{Goal:} Find a \emph{single} polynomial like this expressed in elements from
-$\mat{b}$ of $\alpha\mat{b}$.
+$\mat{b}$ or $\alpha\mat{b}$.
 \end{frame}
 
 \begin{frame}{Elimination templates (cont.)}
