@@ -1016,6 +1016,14 @@ In \cite{bhayani-etal-cvpr-2020,bhayani-etal-arxiv-2020} automatic generators us
 resultant-based methods are proposed. Major strengths compared to the action matrix method is
 in terms of numerical stability.
 
+\subsection{What about large scale problems?}
+Gröbner basis methods only work well when the number of solutions are small---say less than one
+hundred solutions---since larger solvers suffer from numerical instability, due to large eliminations
+and eigenvalue problems. One way to approach larger problems is by using \emph{homotopy continuation} (HC). In computer vision, a famous problem with many solutions is the trifocal problem, \ie{} with
+three calibrated cameras. There are two common minimal problems for points and lines in three views
+with 216 and 312 solutions each. These are considerd in~\cite{fabbri-etal-cvpr-2020}, and they also
+propose the C++ package called MINUS (MInimal problem NUmerical Solver), which is publicly available.\footnote{Code available at~\url{https://github.com/rfabbri/minus}.}
+
 \clearpage
 \bibliographystyle{apalike}
 {\small
