@@ -888,11 +888,11 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
         \[
             h_1=-3x^2+xy-x+3 \;\text{and}\; h_2 = 3x^3+3xy^2+x-y+1
         \]
-        to
+        into normal form
         \[
             \overline{(h_1,h_2)}^{G_\mathcal{S}}=(3,-3x-y+1)
         \]
-        where $\mathcal{S}$ is the Gröbner basis for the syzygy module.
+        where $G_\mathcal{S}$ is the Gröbner basis for the syzygy module.
     \end{column}%
     \begin{column}{0.3\textwidth}
         \centering
@@ -910,7 +910,7 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
 \begin{frame}[t]{Syzygy-based reduction (cont.)}
 \begin{enumerate}
 \item Generate an instance of the equations in $\Z_p[\mat{x}]$.
-\item Using Macaulay2 compute a Gröbner basis~$G$ and the standard monomials in $\Z_p[\mat{x}]$.
+\item Using Macaulay2 compute a Gröbner basis~$G$ and the standard monomials in~$\Z_p[\mat{x}]$.
 \item Using the Gröbner basis $G$ find some polynomials $h_{ij}\in\Z_p[\mat{x}]$ such that
 \[
     \alpha b_i- \sum_{j=1}^K m_{ij}b_j = \sum_{j=1}^mh_{ij}f_j\;.
@@ -971,7 +971,21 @@ defined as
 \begin{frame}{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
-        Choose a coordinate system in which~$\mat{v}=(0,\,1,\,0)$.
+        Choose a coordinate system in which~$\mat{v}=(0,\,1,\,0)$.\\[5mm]
+        Line constraints:
+        \[
+            \det\!\left(\begin{bmatrix}
+                    \mat{\ell}_{1k} &
+                    \mat{R}_2^\T\mat{\ell}_{2k} &
+                    \mat{R}_3^\T\mat{\ell}_{3k}
+                \end{bmatrix}\right) = 0,
+        \quad k = 1,\,2\;.
+        \]
+        Point constraint:
+        \[
+            \mat{x}_k \times \mat{P}_k\mat{X} = 0,  \quad k=1,\,2,\, 3\;.
+        \]
+        \alert{Note:} The unknowns $\theta_2$ and $\theta_3$ can be found independently from $\mat{t}_2$ and $\mat{t}_3$.
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
