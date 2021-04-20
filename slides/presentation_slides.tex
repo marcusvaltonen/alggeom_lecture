@@ -404,7 +404,6 @@ efficient algorithms exist, such as Faugère's F4 and F5 algorithms, but they ar
 still not feasible.
 \end{frame}
 
-
 \begin{frame}{The reality (cont.)}
 But there are good news!
 We are often interested in solving generic problem instances, \eg{} the relative pose
@@ -417,6 +416,131 @@ problem
 \end{aligned}
 \end{equation*}
 Only the input data $\mat{x}_i$ and $\mat{x}_i'$ change!
+\end{frame}
+
+\begin{frame}[t]{Example}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Consider
+        \begin{equation*}
+        \begin{aligned}
+            f_1 &= x^2+y^2-1=0, \\
+            f_2 &= x + ay + b =0\;.
+        \end{aligned}
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Pick an instance in $\Z_p$, \eg{}
+        \begin{equation*}
+        \begin{aligned}
+            f_1 &= x^2+y^2-1=0, \\
+            f_2 &= x + 2y - 2 =0\;.
+        \end{aligned}
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Compute a basis for $\Z_p/I$, where $I=\langle f_1,f_2\rangle$, and recover the action matrix. In this case
+        \begin{equation*}
+            y\begin{bmatrix}
+                y \\ 1
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                3 & -2 \\ 1 & 0
+            \end{bmatrix}
+            \begin{bmatrix}
+                y \\ 1
+            \end{bmatrix}
+            {\mod I},
+        \end{equation*}
+        working in $\Z_7$. In practice one would use a larger prime,\\ \eg{} $p=30097$.
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        From the Gröbner basis we get (first row)
+        \begin{equation*}
+            p = y^2-3y+2,
+        \end{equation*}
+        which we wish to express in $f_1$ and $f_2$. One possibility is
+        \begin{equation*}
+            p = 3f_1 + (-3x-y+1)f_2.
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        For this specific instance
+        \begin{equation*}
+            p = 3f_1 + (-3x-y+1)f_2,
+        \end{equation*}
+        and our assumption is that any other instance can be written as
+        \begin{equation*}
+            p = c_0f_1 + (c_1x+c_2y+c_3)f_2\;.
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{The reality (cont.)}
@@ -432,9 +556,6 @@ ${}^*$Only differs for each instance in terms of the coefficients from the input
 \begin{frame}{Elimination templates}
 \alert{Idea:} We try to find the action matrix using \emph{elimination templates},
 which encode the relevant eliminations directly.
-\end{frame}
-
-\begin{frame}{Example}
 \end{frame}
 
 \begin{frame}{Elimination templates (cont.)}
@@ -548,18 +669,167 @@ Now, the reducible monomials can be expressed as a linear combination of the bas
 which is what we were looking for.
 \end{frame}
 
-\begin{frame}{Example}
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        We suspect any instance can be written as
+        \begin{equation*}
+            p = c_0f_1 + (c_1x+c_2y+c_3)f_2\;.
+        \end{equation*}
+        We choose to augment the system
+        \begin{equation*}%\label{kappa:eq:polsys-aug}
+            \begin{aligned}
+            \left.
+            \begin{aligned}
+            f_1(x,y) & = 0, \\
+            f_2(x,y) & = 0, \\
+            \end{aligned}
+            \right\}&\text{original}
+            \\
+            \left.
+            \begin{aligned}
+            xf_2(x,y) & = 0, \\
+            yf_2(x,y) & = 0, \\
+            \end{aligned}
+            \right\}&\text{augmented}
+            \end{aligned}
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Explicitly, we have
+        \begin{equation*}%\label{kappa:eq:polsys-aug}
+            \begin{aligned}
+            x^2 + y^2 -1 & = 0, \\
+            x+ay+b & = 0, \\
+            x^2+axy+bx & = 0, \\
+            xy+ay^2 +by & = 0, \\
+            \end{aligned}
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Equivalently, in matrix form (swapping rows)
+        \begin{equation*}%\label{kappa:eq:polsys-aug}
+            \begin{bmatrix}
+                1 &&&1&&-1 \\
+                1&a&b\\
+                &1&&a&b\\
+                &&1&&a&b
+            \end{bmatrix}
+            \begin{bmatrix}
+                x^2 \\ xy \\ x \\ y^2 \\ y \\ 1
+            \end{bmatrix}
+            = 0\;.
+        \end{equation*}
+    Here $\XE = \{x^2,xy,x\}$, $\XR=\{y^2,y\}$ and $\XB=\{y,1\}$.
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Performing Gauss--Jordan elimination yields
+        \begin{equation*}%\label{kappa:eq:polsys-aug}
+            \begin{bmatrix}
+                1&&& & \bullet & \bullet\\
+                &1&& & \bullet & \bullet\\
+                &&1& & \bullet & \bullet \\
+                &&&1 & - m_{11} & -m_{12}
+            \end{bmatrix}
+            \begin{bmatrix}
+                x^2 \\ xy \\ x \\ y^2 \\ y \\ 1
+            \end{bmatrix}
+            = 0
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        We have found the action matrix, for the generic problem
+        \begin{equation*}
+            y\begin{bmatrix}
+                y \\ 1
+            \end{bmatrix}
+            =
+            \begin{bmatrix}
+                m_{11} & m_{12} \\ 1 & 0
+            \end{bmatrix}
+            \begin{bmatrix}
+                y \\ 1
+            \end{bmatrix}
+            {\mod I},
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Elimination templates (cont.)}
 \begin{itemize}
 \item Which monomials should I use to expand the system?
     \begin{itemize}
-    \item The fewer the better---fewer operations and better numerics.
+    \item The fewer the better---fewer operations and better numerics. But, we also need to make sure we have enough monomials to be able to express the polynomial $p$.
     \end{itemize}
 \item How to pick these monomials optimally?
     \begin{itemize}
-    \item Computationally intensive.
+    \item Computationally intensive. But, there are some heuristics that have proven useful.
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -581,8 +851,89 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
 \end{equation*}
 \end{frame}
 
-\begin{frame}{Example}
-See Viktor Larsson's PhD thesis Example 1.1 (p. 46--47).
+\begin{frame}[t]{Example (cont.)}
+\vspace{3mm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        We suspected that any instance could be written as
+        \begin{equation*}
+            p = \underbrace{c_0}_{=h_1}f_1 + \underbrace{(c_1x+c_2y+c_3)}_{=h_2}f_2,
+        \end{equation*}
+        but what if we found another pair of polynomials $h_1$ and $h_2$? What if we got
+        (for the specific instance)
+        \[
+            h_1=-3x^2+xy-x+3 \;\text{and}\; h_2 = 3x^3+3xy^2+x-y+1\;?
+        \]
+        Building an elimination template from these would have resulted in a larger system.
+        We would get more coefficients, as well as augmenting with more equations, resulting in
+        more than six monomials.
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[t]{Example (cont.)}
+\vspace{3mm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Utilizing syzygies, we may reduce 
+        \[
+            h_1=-3x^2+xy-x+3 \;\text{and}\; h_2 = 3x^3+3xy^2+x-y+1
+        \]
+        to
+        \[
+            \overline{(h_1,h_2)}^{G_\mathcal{S}}=(3,-3x-y+1)
+        \]
+        where $\mathcal{S}$ is the Gröbner basis for the syzygy module.
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\iftrue
+\begin{frame}[t]{Syzygy-based reduction (cont.)}
+\begin{enumerate}
+\item Generate an instance of the equations in $\Z_p[\mat{x}]$.
+\item Using Macaulay2 compute a Gröbner basis~$G$ and the standard monomials in $\Z_p[\mat{x}]$.
+\item Using the Gröbner basis $G$ find some polynomials $h_{ij}\in\Z_p[\mat{x}]$ such that
+\[
+    \alpha b_i- \sum_{j=1}^K m_{ij}b_j = \sum_{j=1}^mh_{ij}f_j\;.
+\]
+\item Compute a Gröbner basis for the syzygy module
+$
+    \mathcal{S} = \syz(f_1,\ldots,f_m)\;.
+$
+\item Reduce each $\mat{h}_i=(h_{i1},\ldots,h_{im})$ into normal form, \ie{} compute $\overline{\mat{h}_i}^{G_{\mathcal{S}}}$.
+\item Construct an elimination template from monomials occuring in $\overline{\mat{h}_i}^{G_{\mathcal{S}}}$.
+\end{enumerate}
+\end{frame}
+\fi
+
+\begin{frame}{Why an automated approach?}
+Before the automatic solvers there were a lot of papers using this method, where the selection of the monomials were hand crafted. While many of these perform well, there are a couple of downsides.
+
+By using an automatic approach, we
+\begin{itemize}
+\item eliminate the human aspect (errors in coding, non-extensive trials, etc.),
+\item enable repeatability,
+\item faster development times (\eg{} we can quicker evaluate a certain parameterization).
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Saturation of an ideal}
