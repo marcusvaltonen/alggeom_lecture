@@ -99,6 +99,7 @@
 \newcommand{\R}{\ensuremath{\mathbbm{R}}}
 \newcommand{\K}{\ensuremath{\mathbbm{K}}}
 \newcommand{\C}{\ensuremath{\mathbbm{C}}}
+\renewcommand{\P}{\ensuremath{\mathbbm{P}}}
 \renewcommand{\phi}{\varphi}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -884,7 +885,7 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
 \vspace{3mm}
 \begin{columns}
     \begin{column}{0.7\textwidth}
-        Utilizing syzygies, we may reduce 
+        Utilizing syzygies, we may reduce
         \[
             h_1=-3x^2+xy-x+3 \;\text{and}\; h_2 = 3x^3+3xy^2+x-y+1
         \]
@@ -966,6 +967,7 @@ defined as
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
     \end{column}
 \end{columns}
+{\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
 \end{frame}
 
 \begin{frame}{The importance of parameterization}
@@ -983,17 +985,119 @@ defined as
         \]
         Point constraint:
         \[
-            \mat{x}_k \times \mat{P}_k\mat{X} = 0,  \quad k=1,\,2,\, 3\;.
+            \lambda_i\mat{x}_k = \mat{P}_k\mat{X},  \quad k=1,\,2,\, 3\;.
         \]
-        \alert{Note:} The unknowns $\theta_2$ and $\theta_3$ can be found independently from $\mat{t}_2$ and $\mat{t}_3$.
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
     \end{column}
 \end{columns}
-
 \end{frame}
+
+\begin{frame}{The importance of parameterization}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 1: Naive approach}
+
+        \begin{itemize}
+            \item Fix scale using $\lambda_1 = 1$, then $\mat{x}_1=\bar{\mat{X}}$, where $\bar{\mat{X}}$ is the inhomogeneous representation of $\mat{X}\in\P^3$.
+            \item Get rid of the scale parameter
+            \[
+                \mat{x}_k \times \mat{P}_k\mat{X} = 0,  \quad k=1,\,2,\, 3\;.
+            \]
+            \item Use unit quaternions $\mat{q}_i = (s_{i1},\,s_{i2}\mat{v}^\T)^\T$ and
+                  enforce $\norm{\mat{q}_i}^2=1$, for $k=1$, 2.
+        \end{itemize}
+
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+    \end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{The importance of parameterization}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 2: Remove translations}
+
+        \begin{itemize}
+            \item Translations are given by
+            \[
+                \mat{t}_k = \lambda_k\mat{x}_k-\mat{R}_k\mat{x}_1,
+            \]
+            where $\lambda_1$ and $\lambda_2$ are unknown.
+        \end{itemize}
+
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 3: Two-step solver}
+
+        \begin{itemize}
+        \item The unknowns $\theta_2$ and $\theta_3$ can be found independently from $\mat{t}_2$ and $\mat{t}_3$.
+        \item Use a two-step solver in which $\theta_2$ and $\theta_3$ are solved for
+        using the determinant constriant.
+        \end{itemize}
+
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 4: Two-step solver + \\Cayley parameterization}
+
+        \begin{itemize}
+            \item Scale independent, \ie{} we may use Cayley parameterization $\mat{q}_i = (1,\,s_i\mat{v}^\T)^\T$
+        \end{itemize}
+
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization}
+    \begin{center}
+        \small
+    \begin{tabular}{lllll}\hline
+        Solver & Unknowns & Additional equations & Template size & Runtime \\\hline
+        1 & $s_{21}, s_{22}, s_{31}, s_{32}, \mat{t}_2, \mat{t}_3$ & $\mat{X}=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1$ & $1,306\times 1,261$ & 0.57 s \\
+        2 & $s_{21}, s_{22}, s_{31}, s_{32}, \lambda_2, \lambda_3$ &
+$
+    \left\{
+    \begin{aligned}
+        \mat{t}_k &= \lambda_k\mat{x}_k-\mat{R}_k\mat{x}_1,\,k=2,3\\
+        \mat{X} &=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1
+    \end{aligned}
+    \right.
+$
+     & $652\times 462$ & 40 ms \\
+        3 & $s_{21}, s_{22}, s_{31}, s_{32}$ & $\norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1$ & $96\times 88$ & 1.25 ms \\
+        4 & $s_{2}, s_{3}$ & & $8\times 16$ & 100 $\mu$s \\
+    \end{tabular}
+\end{center}
+\end{frame}
+
 
 \section{Group exercise}
 
