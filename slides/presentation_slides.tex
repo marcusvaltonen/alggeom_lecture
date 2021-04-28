@@ -86,14 +86,15 @@
 
 \newcommand{\FULLSCREEN}{0.65\textwidth}
 
+% vast and Vast brackets (larger than Huge)
 \makeatletter
+\newcommand{\HUGE}{\bBigg@{3}}
 \newcommand{\vast}{\bBigg@{4}}
 \newcommand{\Vast}{\bBigg@{5}}
-\newcommand{\VAST}{\bBigg@{16}}
-\newcommand{\VAst}{\bBigg@{14}}
 \makeatother
 
 \usepackage[export]{adjustbox}[2011/08/13]
+
 
 \newcommand{\cammat}[2]{\left[#1\;|\;#2\right]}
 \newcommand{\R}{\ensuremath{\mathbbm{R}}}
@@ -1093,11 +1094,485 @@ $
 $
      & $652\times 462$ & 40 ms \\
         3 & $s_{21}, s_{22}, s_{31}, s_{32}$ & $\norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1$ & $96\times 88$ & 1.25 ms \\
-        4 & $s_{2}, s_{3}$ & & $8\times 16$ & 100 $\mu$s \\
+        4 & $s_{2}, s_{3}$ & & $8\times 16$ & 100 $\mu$s \\\hline
     \end{tabular}
 \end{center}
 \end{frame}
 
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        A mobile platform with a camera rigidly mounted and directed towards the floor.
+        Camera poses:
+        \begin{equation*}\label{paper03:eq:cammats}
+        \begin{aligned}
+            \mat{P}_A &= \mat{R}_{\psi\theta}[\mat{I}\;|\;\mat{0}],\\
+            \mat{P}_B &= \mat{R}_{\psi\theta}\mat{R}_\phi[\mat{I}\;|\;{-\mat{t}}],
+        \end{aligned}
+        \end{equation*}
+        where $\mat{R}_{\psi\theta}$ is a rotation $\theta$ about the $y$-axis followed by
+        a rotation~$\psi$ about the $x$-axis which is \emph{assumed to be fixed but possibly unknown}.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{itemize}
+        \item The mobile platform rotates about the
+        plane normal (or $z$-axis) by an angle $\phi$.
+        \item Translation parallel to the ground plane~$\mat{t}=(t_x,\,t_y,\,0)^{\T}$.
+        \item Induced homography
+        \begin{equation*}\label{eq:Hplanar}
+            \mat{H} \sim \mat{R}_{\psi\theta}\mat{R}_{\phi}\mat{T}_{\mat{t}}\mat{R}_{\psi\theta}^{\T},
+        \end{equation*}
+        where $\mat{T}_{\mat{t}}=\mat{I}-\mat{tn}^{\T}$ and
+        $\mat{n}=(0,\,0,\,1)^{\T}$ is a floor normal.
+        \item The homography matrix can be made unique, \eg{} by imposing $\det{\mat{H}}=1$.
+        \end{itemize}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        There are five degrees of freedom
+        \begin{itemize}
+            \item The fixed angles $\psi$ and $\theta$,
+            \item The non-fixed angle $\phi$ and the translation components $t_x$ and $t_y$.
+        \end{itemize}
+
+        Minimal solver uses 2.5 point correspondences.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 1: Naive approach}
+
+        Parameterize the rotation matrices
+        \begin{equation*}
+            \mat{R}_z(\phi) = \begin{bmatrix}
+                \cos{\phi} & \sin{\phi} & 0 \\
+                -\sin{\phi} & \cos{\phi} & 0 \\
+                0 &0 &1
+            \end{bmatrix}
+        \end{equation*}
+        where~$\cos^2{\phi}+\sin^2{\phi} = 1$, etc. Then use
+        \[
+            \mat{H} = \mat{R}_{\psi\theta}\mat{R}_{\phi}\mat{T}_{\mat{t}}\mat{R}_{\psi\theta}^{\T}\;.
+        \]
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 1: Naive approach}
+
+        The equations are:
+        \[
+        \begin{aligned}
+            \mat{x}_1'\times \mat{Hx}_1 &= 0, &\quad \text{{\tiny (keep\,2\,eqs.)}} \\
+            \mat{x}_2'\times \mat{Hx}_2 &= 0, &\quad \text{{\tiny (keep\,2\,eqs.)}} \\
+            \mat{x}_3'\times \mat{Hx}_3 &= 0, &\quad \text{{\tiny (keep\,1\,eq.)}}
+        \end{aligned}
+        \]
+        where
+        $\mat{H} = \mat{R}_{\psi\theta}\mat{R}_{\phi}\mat{T}_{\mat{t}}\mat{R}_{\psi\theta}^{\T}$
+        and
+        \[
+        \begin{aligned}
+            \cos^2{\theta} + \sin^2{\theta} &= 0, \\
+            \cos^2{\psi} + \sin^2{\psi} &= 0, \\
+            \cos^2{\phi} + \sin^2{\phi} &= 0\;.
+        \end{aligned}
+        \]
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1.pdf}
+    \end{column}%
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 2: Re-parameterization}
+
+        \begin{itemize}
+            \item Align the overhead tilt!
+            \item Camera matrices
+            \[
+                \begin{aligned}
+                    \mat{P}_A &= [\mat{I}\,|\,\mat{0}], \\
+                    \mat{P}_B &= [\mat{R}_{\mat{n}}(\phi)\,|\,-\mat{t}]
+                \end{aligned}
+            \]
+            \item Induced homography
+            \begin{equation*}\label{paper03:eq:h}
+                \mat{H}= \mat{R}_{\mat{n}}(\phi)+\mat{t}\mat{n}^{ \T}\;.
+            \end{equation*}
+        \end{itemize}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The importance of parameterization -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \textbf{Solver 2: Re-parameterization}
+
+        \begin{itemize}
+            \item We have replaced several multiplications with addition $\longrightarrow$ lower degree polynomials
+            \item No need to introduce auxilliary variables---just use quaternion representation.
+            \item A single new constraint introduces, $\mat{t}\cdot\mat{n} = 0$.
+        \end{itemize}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The hidden variable trick}
+The \emph{hidden variable trick} can be used when the equations are linear in one or more variables.
+\begin{itemize}
+    \item Reduces the number of unknowns, which potentially yields a smaller elimination template.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 1}
+Consider the following system
+\begin{equation*}
+\begin{aligned}
+m_{11}xz + m_{12}x + m_{13}yz + m_{14}y + m_{15}z^2 + m_{16}z + m_{17} &= 0, \\
+m_{22}xz + m_{22}x + m_{23}yz + m_{24}y + m_{25}z^2 + m_{26}z + m_{27} &= 0, \\
+m_{32}xz + m_{32}x + m_{33}yz + m_{34}y + m_{35}z^2 + m_{36}z + m_{37} &= 0, \\
+\end{aligned}
+\end{equation*}
+where~$m_{ij}\in\C$ are generic coefficients, and $x$, $y$ and $z$ are unknowns.
+\end{frame}
+
+
+\begin{frame}{The hidden variable trick -- Example 1}
+The action matrix method is directly applicable, but
+the system is linear in $x$ and $y$, hence we may write it as
+\begin{equation*}\label{eq:specialnullvector}
+\mat{M}(z)
+\begin{bmatrix}
+x \\
+y \\
+1
+\end{bmatrix}
+= 0,
+\end{equation*}
+where
+\begin{equation*}
+\mat{M}(z)=
+\begin{bmatrix}
+    m_{11}z + m_{12} & m_{13}z + m_{14} & m_{15}z^2 + m_{16}z + m_{17} \\
+    m_{22}z + m_{22} & m_{23}z + m_{24} & m_{25}z^2 + m_{26}z + m_{27} \\
+    m_{32}z + m_{32} & m_{33}z + m_{34} & m_{35}z^2 + m_{36}z + m_{37}
+\end{bmatrix}\;.
+\end{equation*}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 1}
+\begin{itemize}
+\item We seek the one-dimensional nullspace of~$\mat{M}(z)$.
+\item $\mat{M}(z)$ is rank deficient $\Rightarrow$ $\det(\mat{M}(z))=0$.
+\item We get a quartic polynomial in~$z$
+\begin{equation*}
+    \det(\mat{M}(z)) =
+    \alpha_4 z^4 +
+    \alpha_3 z^3 +
+    \alpha_2 z^2 +
+    \alpha_1 z +
+    \alpha_0 = 0,
+\end{equation*}
+where $\alpha_i\in\C$ only depend on~$m_{ij}$.
+\item Closed-form solution available! No action matrix method necessary.
+\item The remaining parameters can be obtained using SVD.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        The scene plane $\pi$ and a camera's image plane $\pi'$ are related point-wise by the
+        homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar, 
+        $\mat{X}_i\in\pi$ and $\mat{x}'\in\pi'$. Let $\mat{X}_i$ and~$\mat{X}'_i$ be two points on the
+        scene plane $\pi$ such that $\mat{X}'_i -\mat{X}_i=\mat{t}$. Then
+        \begin{equation*}
+            \alpha_i\mat{x}_i' = \mat{PX}'_i = \mat{PTX}_i = \mat{PTP}^{-1}\mat{x}_i=\mat{H_ux}_i,
+        \end{equation*}
+        where the homography $\mat{H_u}=\mat{PTP}^{-1}$ is called a conjugate translation.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        We get
+        \begin{equation*}
+        \mat{H_u} \sim \mat{I}_3+s_i^{\mat{u}}\mat{ul}^\T,
+        \end{equation*}
+        where $\mat{I}_3$ is the $3\times 3$ identity matrix, and
+        \begin{itemize}
+        \item line $\mat{l}$ is the imaged scene plane’s vanishing line,
+        \item point $\mat{u}$ is the vanishing direction of translation, which must meet the vanishing
+              line~$\mat{l}$, \ie{} $\mat{l}^\T\mat{u} = 0$,
+        \item and scalar $s_i^{\mat{u}}$ is the magnitude of translation in the direction $\mat{u}$ for
+              the point correspondence $\mat{x}_i\leftrightarrow\mat{x}_i'$.
+        \end{itemize}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Radial Distortion}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+Fitzgibbon (2001): The division model
+\begin{equation*}
+\mat{x}_i^u = f(\mat{x}_i,\lambda)% = \begin{bmatrix}x_i\\y_i\\w_i\end{bmatrix}
+= \begin{bmatrix}x_i\\y_i\\1+\alert{\lambda}\,(x_i^2+y_i^2)\end{bmatrix}\;.
+\end{equation*}
+Benefits: a single distortion parameter~$\alert{\lambda}$ yields good results.
+\end{column}%
+\begin{column}{0.4\textwidth}
+\includegraphics[width=0.9\linewidth]{images/distortion.png}
+\end{column}%
+\end{columns}%
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        The problem:
+        \begin{itemize}
+            \item Add radial distortion,
+            \item Fix scale: $l_3=1$ and $\norm{\mat{u}}=s_1^{\mat{u}}$.
+            \item Let~$\bar{s}_i^{\mat{u}}\coloneqq s_i^{\mat{u}} / \norm{\mat{u}}$, then $\bar{s}_1^{\mat{u}}=1$.
+            \item $\bar{s}_1^{\mat{u}} = \bar{s}_2^{\mat{u}} = 1$.
+        \end{itemize}
+We end up with
+        \begin{itemize}
+            \item 7 unknowns ($l_1$, $l_2$, $u_1$, $u_2$, $u_3$, $\bar{s}_3^{\mat{u}}$, $\lambda$),
+            \item 7 equations---two equations
+per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0$.
+        \end{itemize}
+        Minimal solver: 3 points
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        Linear in~$\mat{u}$:
+        \begin{equation*}
+        \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)\begin{bmatrix} u_1 \\ u_2 \\ u_3 \\1\end{bmatrix} = 0
+        \end{equation*}
+        where $\mat{M} = \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)$ is a $7\times 4$ matrix.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        It turns out that
+        the matrix has a special structure, namely
+        \begin{equation*}\label{eq:pritts-M}
+        \mat{M} = \begin{bmatrix}
+        m_{11} & m_{12} &      0 & m_{14} \\
+        m_{21} & m_{22} &      0 & m_{24} \\
+        m_{31} &      0 & m_{33} & m_{34} \\
+        m_{41} &      0 & m_{43} & m_{44} \\
+        m_{51} & m_{52} &      0 & m_{54} \\
+        m_{61} &      0 & m_{63} & m_{64} \\
+        l_1 & l_2 &   1 & 0
+        \end{bmatrix}\;.
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The hidden variable trick -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        The matrix $\mat{M}$ is rank deficient $\Rightarrow$
+        all $4\times 4$ minors must vanish.
+
+        There are $\binom{7}{4}=35$ minors. We have a problem with
+        \begin{itemize}
+            \item 4 unknowns
+            \item 36 equations
+        \end{itemize}
+
+    We will return to this problem later.
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Eliminating variables -- Example}
+Sometimes we are able to eliminate variables even if there are no linear relationships. This
+can be achieved using \emph{Gauss--Jordan elimination}.
+\end{frame}
+
+\begin{frame}{Eliminating variables -- Example}
+Assume we have four unknowns $x$, $y$, $z$ and $w$, where $x^2+y^2=1$. We seek to solve
+\begin{equation*}
+    \mat{M}\mat{v} = 0,
+\end{equation*}
+where $\mat{M}\in\C^{3\times 9}$ is a coefficient matrix and the monomial vector is
+\setcounter{MaxMatrixCols}{20}
+\begin{equation*}
+    \mat{v} = \begin{bmatrix}
+            xw & x &
+            yw & y &
+            z^2 & zw^2 & z &
+            w & 1
+        \end{bmatrix}^\T\;.
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Eliminating variables -- Example}
+Due to the constraint~$x^2+y^2=1$ we cannot use the hidden variable trick. But, we can still
+eliminate $z$ by using Gauss--Jordan elimination. The corresponding system, after elimination, is
+on the form
+\begin{equation*}
+\raisebox{-6pt}{ $\hat{\mat{M}} =$ }
+\raisebox{-6pt}{\HUGE[}
+\begingroup % keep the change local
+\setlength\arraycolsep{2pt}
+\begin{matrix}
+%xw & x & yw & y & z^2 & zw^2 & zw & w & 1\\
+z^2 & zw^2 & z & xw & x & yw & y & w & 1\\
+    1 & & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
+    & 1 & & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet & \\
+    & & 1 & \bullet & \bullet & \bullet & \bullet & \bullet & \bullet &
+\end{matrix}
+\endgroup
+\raisebox{-6pt}{\HUGE]\;.}
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Eliminating variables -- Example}
+From the above system, we note the following relations
+\begin{equation*}\label{paper04:eq:elim}
+    \begin{aligned}
+    z^2 + g_1(x,y,w)  &=  0,\\
+    zw^2 + g_2(x,y,w)  &=  0,\\
+    z + g_3(x,y,w)  &=  0,\\
+    \end{aligned}
+\end{equation*}
+where~$g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
+Consequently, we must enforce the relations
+\begin{equation}\label{paper04:eq:knowntilt1}
+\begin{aligned}
+    g_2(x,y,w) &= w^2 g_3(x,y,w), \\
+    g_1(x,y,w) &= \left(g_3(x,y,w)\right)^2\;.
+\end{aligned}
+\end{equation}
+Now, we have a reduced system with three unknowns and three equations given
+by~\eqref{paper04:eq:knowntilt1} and the constraint $x^2+y^2=1$.
+\end{frame}
+
+\begin{frame}{Saturation}
+When is saturation useful?
+\begin{itemize}
+    \item To remove unwanted solutions!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Saturation}
+\end{frame}
+
+\begin{frame}{Saturation}
+\end{frame}
+
+\begin{frame}{A clever elimination strategy}
+\end{frame}
+
+\begin{frame}{A clever elimination strategy}
+\end{frame}
+
+\begin{frame}{Further improvements}
+Theory
+\begin{itemize}
+    \item Using $p$-fold symmetries,
+    \item Beyond Gröbner bases,
+    \item Polynomial Eigenvalue Problems (PEP),
+    \item Resultant-based automatic generators,
+    \item Large problems? Homotopy continuation.
+\end{itemize}
+Software
+\begin{itemize}
+    \item Generate in C++ and use fast solvers.
+\end{itemize}
+\end{frame}
+
+\section{Time to make your own solver!}
 
 \section{Group exercise}
 
