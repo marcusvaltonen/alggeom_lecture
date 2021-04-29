@@ -123,6 +123,7 @@
 \DeclareMathOperator{\diag}{diag}
 \DeclareMathOperator{\atan}{atan2}
 \DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\vectorize}{vec}
 
 \newcommand{\T}{T}
 \usepackage{setspace}
@@ -293,7 +294,7 @@ style              = Matlab-editor,
 \pgfsetlayers{background,main,foreground}
 
 \usetheme{metropolis}           % Use metropolis theme
-\title{\vspace{0.3cm}{\small Practical aspects of solving a system of polynomial equations}\vspace{-0.5cm}}
+\title[]{\vspace{0.3cm}{\small Practical aspects of solving a system of polynomial equations}\vspace{-0.5cm}}
 \author{\vspace{-0.3cm}Marcus Valtonen Örnhag}
 \institute{%
     Centre for Mathematical Sciences, Lund University}
@@ -1756,22 +1757,6 @@ Furthermore, one may exclude the auxiliary variable~$x_0$ from the quotient ring
 \timetocode{}
 \end{frame}
 
-\begin{frame}{Saturation -- Example}
-We could not solve the previous problem. Macaulay2 cast an error
-saying:
-\begin{center}
-    \texttt{module given is not finite over the base}
-\end{center}
-
-This means that there are infinitely many solutions. Why? Physically it seems unreasonable,
-and if one goes back and creates a solver without using the hidden variable trick, we would
-\emph{not} get this error.
-
-\begin{itemize}
-    \item[$\Rightarrow$] The hidden variable trick introduced a one-dimensional family of
-                         spurious solutions!
-\end{itemize}
-\end{frame}
 
 \begin{frame}{Saturation -- Example}
 We could not solve the previous problem. Macaulay2 cast an error
@@ -1936,7 +1921,7 @@ from the first three columns\ldots \alert{but be smart!}
 \textbf{Solution:}
 
 Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
-from the first three columns\ldots \alert{but be smart!}
+from the first three columns\ldots \alert{but be smart! Use the one with lowest degree}
 \begin{equation*}
     f_s =
         \begin{vmatrix}
@@ -1947,14 +1932,158 @@ from the first three columns\ldots \alert{but be smart!}
         =
         m_{11}m_{22}-m_{12}m_{21}\;.
 \end{equation*}
-Add an auxiliary variable $x_{\text{aux}}$ $\Leftarrow$ $x_{\text{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$, and saturate $x_{\text{aux}}$.
+Add an auxiliary variable $x_{\text{aux}}$ $\Rightarrow$ $x_{\text{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$, and saturate $x_{\text{aux}}$.
+For comparison, we will also use the Rabinowitsch trick.
 \timetocode{}
 \end{frame}
 
 \begin{frame}{A clever elimination strategy}
+\textbf{Motivation:}
+In computer vision, there are polynomial systems in which only the linear equations~$F_L$
+depend on image measurements, while the nonlinear equations~$F_N$ stay the same, regardless of
+image measurements.
+
+Examples:
+\begin{itemize}
+\item Fundamental and essential matrix estimation,
+\item Homographies given certain constraints on the motion,
+and epipolar constraint generates linear equations that depend
+\end{itemize}
 \end{frame}
 
 \begin{frame}{A clever elimination strategy}
+\textbf{Offline:}
+\begin{enumerate}
+    \item Let $I = \langle F_N \rangle$ and consider the elimination
+    ideal~$I_{X_L}=I\cap \C[X_L]$
+    \item Compute the generators $G$ of $I_{X_L}$. These contain unknowns from $X_L$ only, \ie{}
+    the unknowns appearing in the linear equations $F_L$.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{A clever elimination strategy}
+\textbf{Online:}
+{\footnotesize
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item Rewrite the linear equations $F_L$ in the unknowns $X_L$ as $\mat{M}X_L= 0$, where $\mat{M}$
+    is a coefficient matrix and the vector $X_L$ contains all unknowns from $X_L$.
+    \item Compute a null space basis $\mat{N}$ of $\mat{M}$ and re-parametrize the unknowns $X_L=\mat{N}Y$. If the
+    rank of $\mat{M}$ is $m_L$, \ie{} the equations in $F_L$ are linearly independent, $Y$ would contain
+    $k=n_L - m_L$ new unknowns. Note that if all input equations in $F$ were homogeneous, we could
+    set one of the unknowns in $Y$ to 1 (assuming it is non-zero) and then $k=n_L-m_L-1$.
+    \item Substitute $X_L=NY$ into the generators $G$ of the elimination ideal $I_{X_L}$.
+    \item Solve the new system of polynomial equations $G(Y) = 0$ (\eg{} using the Gröbner basis
+    method and the precomputed elimination template for~\mbox{$G(Y) = 0$} obtained by using the automatic
+    generator.
+    \item Back-substitute to recover $X_L=\mat{N}Y$.
+    \item Extend partial solutions for $X_L$ to solutions for $X$.
+\end{enumerate}
+}
+\end{frame}
+
+\begin{frame}{A clever elimination strategy -- Example 1}
+\textbf{Example:} (Homework from Kalle) Estimating the essential matrix
+\begin{equation*}
+\begin{aligned}
+    \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
+    \det(\mat{E}) &= 0, &\\
+    2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
+\end{aligned}
+\end{equation*}
+Only the input data $\mat{x}_i$ and $\mat{x}_i'$ change!
+
+\alert{Note:} Online stage only!
+\end{frame}
+
+
+\begin{frame}[t]{A clever elimination strategy -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
+        \textbf{Solver 3: Elimination strategy}
+
+        Induced homography
+        \begin{equation*}\label{paper03:eq:h}
+            \mat{H}= \mat{R}_{\mat{n}}(\phi)+\mat{t}\mat{n}^{\T}
+        \end{equation*}
+
+        Let us do the offline stages! Denote the
+        ideal~$I$ generated by
+        \[
+            \lambda \mat{H}-\mat{R}(\mat{q})-\mat{tn}^{T}=0,
+        \]
+        where~$\lambda$ is a scale factor and $\mat{t}\cdot\mat{n}=0$.
+        We seek the elimination ideal~$I\cap\K[\mat{H}]$, for some suitable field~$\K$.
+
+        \end{minipage}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
+    \end{column}
+\end{columns}
+\timetocode{}
+\end{frame}
+
+\begin{frame}[t]{A clever elimination strategy -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
+        \textbf{Solver 3: Elimination strategy}
+
+        We have the DLT equations
+        \begin{equation*}
+            \mat{x}_i'\times \mat{Hx}_i = 0, \quad i=1,\,2,\,3,
+        \end{equation*}
+        and choose two linearly independent rows (apart from the third pair). We get
+        \begin{equation*}
+            \mat{M}\vectorize(\mat{H}) = 0,
+        \end{equation*}
+        where $\mat{M}$ is a $5\times 9$ matrix.
+        \end{minipage}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
+    \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[t]{A clever elimination strategy -- Example 2}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
+        \textbf{Solver 3: Elimination strategy}
+
+        Generally $\nulldim(\mat{M})=4$, hence
+        \begin{equation}
+            \mat{H} = \sum_{i=1}^4\lambda_i\mat{H}_i\;.
+        \end{equation}
+        Note that there is a scale ambiguity, therefore we may lock the scale \eg{} by forcing \mbox{$\lambda_4=1$}.
+        Now, this corresponds to steps 3 and 4 of the online stage of the elimination strategy proposed by
+        Kukelova~\etal{}. We now use this parameterization of the three unknowns~$\lambda_i$, for $i=1,2,3$
+        and insert them in the generators (the eleven quartic equations). This yields a new system
+        \begin{equation}
+        \begin{aligned}
+            g_1(\lambda_1,\lambda_2,\lambda_3) &= 0, \\
+            &\vdots \\
+            g_{11}(\lambda_1,\lambda_2,\lambda_3) &= 0,
+        \end{aligned}
+        \end{equation}
+        for which the action matrix method is applicable. We will return to this example during the lecture.
+
+        \end{minipage}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
+    \end{column}
+\end{columns}
+\timetocode{}
 \end{frame}
 
 \begin{frame}{Further improvements}
