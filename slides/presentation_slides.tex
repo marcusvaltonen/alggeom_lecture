@@ -62,7 +62,7 @@
 %\usepackage[table]{xcolor}
 \usepackage{multirow}
 
-\usepackage{empheq}
+%\usepackage{empheq}
 %\usepackage[most]{tcolorbox}
 %\newtcbox{\mymath}[1][]{%
 %    nobeforeafter, math upper, tcbox raise base,
@@ -310,7 +310,7 @@ style              = Matlab-editor,
           minimum width=16mm,
           minimum height=12mm,
           red,
-          fill=orange,
+          fill=orange!50!white,
           line width=1.5pt,
           xshift=-24mm,
           yshift=-6.5mm
@@ -330,7 +330,7 @@ Today's tutorial/workshop will contain:
 \item A brief theoretical walkthrough,
 \item Tips and tricks on how to practically speed-up your solver,
 \item Hands-on experience with the automatic Gröbner basis generator,
-\item A group exercise followed by a discussion session.
+\item A group exercise, followed by discussion.
 \end{itemize}
 \end{frame}
 
@@ -339,12 +339,13 @@ Today's tutorial/workshop will contain:
 Using multi-index notation,
 let~$\mat{x^{\alpha}}$ denote a \emph{monomial} of degree $|\mat{\alpha}|$.
 Our main goal is to solve a polynomial system of equations
-\begin{equation}\label{kappa:eq:polsys}
+\begin{equation}\label{eq:polsys}
     \begin{aligned}
     f_1(\mat{x}) & = 0, \\
                  & \hspace{0.575em} \vdots \\
     f_s(\mat{x}) & = 0,
     \end{aligned}
+    \tag{$\star$}
 \end{equation}
 where each polynomial equation can be expressed
 as~$f=\sum_{\mat{\alpha}}c_{\mat{\alpha}}\mat{x^\alpha}$.
@@ -353,7 +354,7 @@ as~$f=\sum_{\mat{\alpha}}c_{\mat{\alpha}}\mat{x^\alpha}$.
 
 \begin{frame}{Recap: The toolbox}
 \begin{itemize}
-\item  The set of all solutions to~\eqref{kappa:eq:polsys} is called an \emph{affine variety}, and is denoted
+\item  The set of all solutions to~\eqref{eq:polsys} is called an \emph{affine variety}, and is denoted
 $\mat{V}(f_1,\ldots,f_s)\subset\C$.
 \item An \emph{ideal} $I\subset\C[\mat{x}]$ is an additive group satisfying the \emph{absorption property},~\ie{}~if~$f\in I$ and $h\in\C[\mat{x}]$ then $hf\in I$. Moreover, given a set of polynomials $f_1,\ldots,f_s\in\C[\mat{x}]$
 we consider the ideal
@@ -374,7 +375,7 @@ of polynomials in~$\mat{x}$ with coefficients in $\C$.
 \item The \emph{Hilbert Basis Theorem} states that every ideal of $\C[\mat{x}]$ is
 finitely generated, \ie{} given an ideal~$I\subset\C[\mat{x}]$ there exist
 $f_1,\ldots,f_s\in\C[\mat{x}]$ such that $I=\langle f_1,\ldots,f_s\rangle$.
-\item The polynomial system of equations~\eqref{kappa:eq:polsys} is defined by the
+\item The polynomial system of equations~\eqref{eq:polsys} is defined by the
 generated ideal; however, the basis is in general not unique.
 \end{itemize}
 
@@ -420,11 +421,11 @@ Then
     T_\alpha([\mat{x}^{\beta_i}]) = [\alpha(\mat{x})\mat{x}^{\beta_i}] = \sum_{j=1}^Km_{ij}[\mat{x}^{\beta_j}]\;.
 \end{equation*}
 This implies that, for $\mat{x}\in V(I)$,
-\begin{equation*}\label{kappa:eq:action}
+\begin{equation*}
     \alpha(\mat{x})\mat{x}^{\beta_i}=\sum_{j=1}^Km_{ij}\mat{x}^{\beta_j}\;.
 \end{equation*}
 Let $\mat{b}$ represent the basis~$\mathcal{B}$ (as a vector), then we have an \alert{eigenvalue problem}
-\begin{equation*}\label{eq:actionmat}
+\begin{equation*}
     \alpha(\mat{x})\mat{b}(\mat{x}) = \mat{M}_\alpha\mat{b}(\mat{x})\;.
 \end{equation*}
 \end{frame}
@@ -443,7 +444,7 @@ still not feasible.
 \end{frame}
 
 \begin{frame}{The reality (cont.)}
-But there are good news!
+But there is good news!
 We are often interested in solving generic problem instances, \eg{} the relative pose
 problem
 \begin{equation*}
@@ -599,9 +600,9 @@ which encode the relevant eliminations directly.
 \begin{frame}{Elimination templates (cont.)}
 Consider the $i$:th row in $\alpha\mat{b} = \mat{M}_\alpha\mat{b}$.
 Any way of expressing $[\alpha b_i]$ reduces to find a polynomial
-\begin{equation}\label{eq:polys}
+\begin{equation*}
     p_i = \alpha b_i -\sum_{j=1}^Km_{ij}b_{j}\in I\;.
-\end{equation}
+\end{equation*}
 \alert{Goal:} Find a \emph{single} polynomial like this expressed in elements from
 $\mat{b}$ or $\alpha\mat{b}$.
 \end{frame}
@@ -615,7 +616,7 @@ for some monomials~$m_1,\ldots, m_\ell$.
     \end{column}%
     \begin{column}{0.5\textwidth}
 \footnotesize
-\begin{equation*}\label{kappa:eq:polsys-aug}
+\begin{equation*}
     \begin{aligned}
     \left.
     \begin{aligned}
@@ -713,10 +714,10 @@ which is what we were looking for.
     \begin{column}{0.7\textwidth}
         We suspect any instance can be written as
         \begin{equation*}
-            p = c_0f_1 + (c_1x+c_2y+c_3)f_2\;.
+            p = c_0f_1 + (c_1{\color{blue}x}+c_2{\color{red}y}+c_3)f_2\;.
         \end{equation*}
         We choose to augment the system
-        \begin{equation*}%\label{kappa:eq:polsys-aug}
+        \begin{equation*}
             \begin{aligned}
             \left.
             \begin{aligned}
@@ -727,8 +728,8 @@ which is what we were looking for.
             \\
             \left.
             \begin{aligned}
-            xf_2(x,y) & = 0, \\
-            yf_2(x,y) & = 0, \\
+            {\color{blue}x}f_2(x,y) & = 0, \\
+            {\color{red}y}f_2(x,y) & = 0, \\
             \end{aligned}
             \right\}&\text{augmented}
             \end{aligned}
@@ -750,7 +751,7 @@ which is what we were looking for.
 \begin{columns}
     \begin{column}{0.7\textwidth}
         Explicitly, we have
-        \begin{equation*}%\label{kappa:eq:polsys-aug}
+        \begin{equation*}
             \begin{aligned}
             x^2 + y^2 -1 & = 0, \\
             x+ay+b & = 0, \\
@@ -775,7 +776,7 @@ which is what we were looking for.
 \begin{columns}
     \begin{column}{0.7\textwidth}
         Equivalently, in matrix form (swapping rows)
-        \begin{equation*}%\label{kappa:eq:polsys-aug}
+        \begin{equation*}
             \begin{bmatrix}
                 1 &&&1&&-1 \\
                 1&a&b\\
@@ -805,7 +806,7 @@ which is what we were looking for.
 \begin{columns}
     \begin{column}{0.7\textwidth}
         Performing Gauss--Jordan elimination yields
-        \begin{equation*}%\label{kappa:eq:polsys-aug}
+        \begin{equation*}
             \begin{bmatrix}
                 1&&& & \bullet & \bullet\\
                 &1&& & \bullet & \bullet\\
@@ -845,7 +846,7 @@ which is what we were looking for.
             \begin{bmatrix}
                 y \\ 1
             \end{bmatrix}
-            {\mod I},
+            {\mod I}\;.
         \end{equation*}
     \end{column}%
     \begin{column}{0.3\textwidth}
@@ -1040,7 +1041,7 @@ defined as
     \begin{column}{0.5\textwidth}
         \begin{minipage}[t][\textheight][t]{\textwidth}
         \theimportanceOneHeight
-        Choose a coordinate system in which~$\mat{v}=(0,\,1,\,0)$.\\[5mm]
+        Choose a coordinate s.t.\@~$\mat{v}=(0,\,1,\,0)$.\\[5mm]
         Line constraints:
         \[
             \det\!\left(\begin{bmatrix}
@@ -1170,13 +1171,13 @@ defined as
         \small
     \begin{tabular}{lllll}\hline
         Solver & Unknowns & Additional equations & Template size & Runtime \\\hline
-        1 & $s_{21}, s_{22}, s_{31}, s_{32}, \mat{t}_2, \mat{t}_3$ & $\mat{X}=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1$ & $1,306\times 1,261$ & 0.57 s \\
+        1 & $s_{21}, s_{22}, s_{31}, s_{32}, \mat{t}_2, \mat{t}_3$ & $\bar{\mat{X}}=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1$ & $1,306\times 1,261$ & 0.57 s \\
         2 & $s_{21}, s_{22}, s_{31}, s_{32}, \lambda_2, \lambda_3$ &
 $
     \left\{
     \begin{aligned}
         \mat{t}_k &= \lambda_k\mat{x}_k-\mat{R}_k\mat{x}_1,\,k=2,3\\
-        \mat{X} &=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1
+        \bar{\mat{X}} &=\mat{x}_1, \norm{\mat{q}_2}^2=\norm{\mat{q}_3}^2=1
     \end{aligned}
     \right.
 $
@@ -1923,7 +1924,7 @@ from the first three columns\ldots \alert{but be smart!}
 Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
 from the first three columns\ldots \alert{but be smart! Use the one with lowest degree}
 \begin{equation*}
-    f_s =
+    f_{\text{sat}} =
         \begin{vmatrix}
         m_{11} & m_{12} & 0\\
         m_{21} & m_{22} & 0\\
@@ -1932,7 +1933,7 @@ from the first three columns\ldots \alert{but be smart! Use the one with lowest 
         =
         m_{11}m_{22}-m_{12}m_{21}\;.
 \end{equation*}
-Add an auxiliary variable $x_{\text{aux}}$ $\Rightarrow$ $x_{\text{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$, and saturate $x_{\text{aux}}$.
+Add an auxiliary variable $x_{\text{aux}}$ $\Rightarrow$ $x_{\text{aux}}-f_{\text{sat}}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$, and saturate $x_{\text{aux}}$.
 For comparison, we will also use the Rabinowitsch trick.
 \timetocode{}
 \end{frame}
@@ -1984,16 +1985,41 @@ and epipolar constraint generates linear equations that depend
 
 \begin{frame}{A clever elimination strategy -- Example 1}
 \textbf{Example:} (Homework from Kalle) Estimating the essential matrix
-\begin{equation*}
-\begin{aligned}
-    \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
-    \det(\mat{E}) &= 0, &\\
-    2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
-\end{aligned}
-\end{equation*}
+\begin{center}
+         \begin{tikzpicture}
+            \node[anchor=base,
+                  path picture={\fill[blue!30] (-0.1,0.4)
+                                rectangle (4.3,-0.9);}] (t1)
+            {%
+            $
+            \begin{aligned}
+                \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
+                \det(\mat{E}) &= 0,\\
+                2\mat{EE}^\T\mat{E} - \tr(\mat{EE}^\T)\mat{E} &= 0,
+            \end{aligned}
+            $
+            };
+            \node[right of=t1, xshift=-5mm,yshift=-3.5mm] {\color{blue}Offline stage};
+        \end{tikzpicture}
+\end{center}
+
 Only the input data $\mat{x}_i$ and $\mat{x}_i'$ change!
 
-\alert{Note:} Online stage only!
+\alert{Note:} Online stage only! (Demazure proved the offline stage in 1988)
+\end{frame}
+
+\begin{frame}{A clever elimination strategy -- Example 1}
+\textbf{Example:} (Homework from Kalle) Use five correspondences
+\begin{equation*}
+    \mat{M}\vectorize(\mat{E}) = 0,
+\end{equation*}
+where $\mat{M}$ is a $5\times 9$ coefficient matrix.
+Express $\mat{E}$ in terms of the null space basis elements
+\[
+    \mat{E} = \sum_{i=1}^4\lambda_i\mat{E}_i,
+\]
+where we may fix the scale by letting~$\lambda_4=1$.
+Insert this in the non-linear equations, \ie{} the rank and trace constraint.
 \end{frame}
 
 
@@ -2098,23 +2124,37 @@ Software
 \end{frame}
 
 \section{Time to make your own solver!}
+\begin{frame}{Estimate the essential matrix}
+Estimate the essential matrix from five point correspondences
+\begin{center}
+         \begin{tikzpicture}
+            \node[anchor=base,
+                  path picture={\fill[blue!30] (-0.1,0.4)
+                                rectangle (4.3,-0.9);}] (t1)
+            {%
+            $
+            \begin{aligned}
+                \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
+                \det(\mat{E}) &= 0,\\
+                2\mat{EE}^\T\mat{E} - \tr(\mat{EE}^\T)\mat{E} &= 0,
+            \end{aligned}
+            $
+            };
+            \node[right of=t1, xshift=-5mm,yshift=-3.5mm] {\color{blue}Offline stage};
+        \end{tikzpicture}
+\end{center}
+Express $\mat{E}$ in terms of the null space basis elements
+\[
+    \mat{E} = \sum_{i=1}^4\lambda_i\mat{E}_i,
+\]
+where we may fix the scale by letting~$\lambda_4=1$.
+Insert this in the non-linear equations, \ie{} the rank and trace constraint.
+\timetocode{}
+\end{frame}
 
 \section{Group exercise}
 
 \begin{frame}{Group 1}
-\textbf{Fundamental matrix with known rotation}\\[8mm]
-For more info, see Example 8 and Example 11 from the lecture notes.
-The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
-\begin{equation*}
-\begin{aligned}
-    \mat{x}'_i\mat{F}\mat{x}_i &= 0, &i=1,\ldots,6\\
-    \det(\mat{E}) &= 0, &\\
-    2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
-\end{aligned}
-\end{equation*}
-\end{frame}
-
-\begin{frame}{Group 2}
 \textbf{Relative pose with one calibrated camera and one with unknown focal length}\\[8mm]
 The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \begin{equation*}
@@ -2126,7 +2166,13 @@ The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \end{equation*}
 \end{frame}
 
-\section{For your individual project}
+\begin{frame}{Group 2}
+\textbf{Fundamental matrix with known rotation}\\[8mm]
+For more info, see Example 8 and Example 11 from the lecture notes.
+\end{frame}
+
+
+\section{Suggestions for your individual project}
 
 \begin{frame}{Problem 1}
 \begin{columns}
