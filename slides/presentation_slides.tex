@@ -128,6 +128,7 @@
 \usepackage{setspace}
 %\usepackage{xcolor}
 \usepackage{tikz}
+%\usetikzlibrary{tikzmark}
 \usepackage{pgfplots}
 
 %\usepackage{caption}
@@ -189,7 +190,7 @@
 \usepackage{pgfplots}
 \usepackage{tikzpagenodes}
 \usetikzlibrary{positioning}
-\usetikzlibrary{arrows,shapes}
+\usetikzlibrary{arrows,shapes,shapes.symbols}
 \usetikzlibrary{arrows.meta}
 \tikzset{%
   thick arrow/.style={
@@ -281,6 +282,22 @@ style              = Matlab-editor,
 \date{\vspace{0.2cm}{\footnotesize\emph{Workshop in Algebraic Geometry, May 2021}}}
 \titlegraphic{%
     \includegraphics[height=1.7cm]{LundUniversity_C2line_CMYK}
+}
+
+\newcommand{\timetocode}{
+    \begin{tikzpicture}[remember picture, overlay, rotate=6, transform shape]
+    \node[starburst,
+          draw,
+          minimum width=16mm,
+          minimum height=12mm,
+          red,
+          fill=orange,
+          line width=1.5pt,
+          xshift=-24mm,
+          yshift=-6.5mm
+    ]
+    at (current page.north east) {\scriptsize Time to code!};
+    \end{tikzpicture}
 }
 
 \begin{document}
@@ -949,10 +966,37 @@ defined as
 \alert{Interpretation:} we can remove solutions for which~$f_s(x) =0$.
 \end{frame}
 
+\begin{frame}{Code example in MATLAB}
+\vspace{3mm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        Let us now bring up MATLAB and implement a solver for this toy example
+        \begin{equation*}
+        \begin{aligned}
+            f_1 &= x^2+y^2-1=0, \\
+            f_2 &= x + ay + b =0\;.
+        \end{aligned}
+        \end{equation*}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\timetocode{}
+\end{frame}
+
+\def\theimportanceOneHeight{\vspace{4mm}}
 \section{Applications}
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         \textbf{Example:} Three views with known rotation axis.\\[8mm]
         \begin{equation*}
             \begin{aligned}
@@ -962,18 +1006,21 @@ defined as
             \end{aligned}
         \end{equation*}\\[8mm]
         Minimal case: One point and two lines.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
-{\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
 \end{frame}
 
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         Choose a coordinate system in which~$\mat{v}=(0,\,1,\,0)$.\\[5mm]
         Line constraints:
         \[
@@ -988,17 +1035,21 @@ defined as
         \[
             \lambda_i\mat{x}_k = \mat{P}_k\mat{X},  \quad k=1,\,2,\, 3\;.
         \]
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         \textbf{Solver 1: Naive approach}
 
         \begin{itemize}
@@ -1011,18 +1062,23 @@ defined as
                   enforce $\norm{\mat{q}_i}^2=1$, for $k=1$, 2.
         \end{itemize}
 
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
+\timetocode{}
 \end{frame}
 
 
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         \textbf{Solver 2: Remove translations}
 
         \begin{itemize}
@@ -1033,17 +1089,22 @@ defined as
             where $\lambda_1$ and $\lambda_2$ are unknown.
         \end{itemize}
 
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
+\timetocode{}
 \end{frame}
 
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         \textbf{Solver 3: Two-step solver}
 
         \begin{itemize}
@@ -1052,29 +1113,37 @@ defined as
         using the determinant constriant.
         \end{itemize}
 
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
+\timetocode{}
 \end{frame}
 
-\begin{frame}{The importance of parameterization}
+\begin{frame}[t]{The importance of parameterization}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceOneHeight
         \textbf{Solver 4: Two-step solver + \\Cayley parameterization}
 
         \begin{itemize}
             \item Scale independent, \ie{} we may use Cayley parameterization $\mat{q}_i = (1,\,s_i\mat{v}^\T)^\T$
         \end{itemize}
 
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includestandalone[width=\linewidth]{tikz/3view_same_rot}
+        {\footnotesize From Viktor Larsson's PhD thesis (p. 54--59)}
     \end{column}
 \end{columns}
+\timetocode{}
 \end{frame}
 
 \begin{frame}{The importance of parameterization}
@@ -1099,9 +1168,12 @@ $
 \end{center}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\def\theimportanceTwoHeight{\vspace{4mm}}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         A mobile platform with a camera rigidly mounted and directed towards the floor.
         Camera poses:
         \begin{equation*}\label{paper03:eq:cammats}
@@ -1112,6 +1184,7 @@ $
         \end{equation*}
         where $\mat{R}_{\psi\theta}$ is a rotation $\theta$ about the $y$-axis followed by
         a rotation~$\psi$ about the $x$-axis which is \emph{assumed to be fixed but possibly unknown}.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1120,9 +1193,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         \begin{itemize}
         \item The mobile platform rotates about the
         plane normal (or $z$-axis) by an angle $\phi$.
@@ -1135,6 +1210,7 @@ $
         $\mat{n}=(0,\,0,\,1)^{\T}$ is a floor normal.
         \item The homography matrix can be made unique, \eg{} by imposing $\det{\mat{H}}=1$.
         \end{itemize}
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1143,9 +1219,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         There are five degrees of freedom
         \begin{itemize}
             \item The fixed angles $\psi$ and $\theta$,
@@ -1153,6 +1231,7 @@ $
         \end{itemize}
 
         Minimal solver uses 2.5 point correspondences.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1161,9 +1240,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         \textbf{Solver 1: Naive approach}
 
         Parameterize the rotation matrices
@@ -1178,6 +1259,7 @@ $
         \[
             \mat{H} = \mat{R}_{\psi\theta}\mat{R}_{\phi}\mat{T}_{\mat{t}}\mat{R}_{\psi\theta}^{\T}\;.
         \]
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1186,9 +1268,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         \textbf{Solver 1: Naive approach}
 
         The equations are:
@@ -1209,6 +1293,7 @@ $
             \cos^2{\phi} + \sin^2{\phi} &= 0\;.
         \end{aligned}
         \]
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1217,9 +1302,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         \textbf{Solver 2: Re-parameterization}
 
         \begin{itemize}
@@ -1236,6 +1323,7 @@ $
                 \mat{H}= \mat{R}_{\mat{n}}(\phi)+\mat{t}\mat{n}^{ \T}\;.
             \end{equation*}
         \end{itemize}
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1244,9 +1332,11 @@ $
 \end{columns}
 \end{frame}
 
-\begin{frame}{The importance of parameterization -- Example 2}
+\begin{frame}[t]{The importance of parameterization -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \theimportanceTwoHeight
         \textbf{Solver 2: Re-parameterization}
 
         \begin{itemize}
@@ -1254,12 +1344,14 @@ $
             \item No need to introduce auxilliary variables---just use quaternion representation.
             \item A single new constraint introduces, $\mat{t}\cdot\mat{n} = 0$.
         \end{itemize}
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
         \includegraphics[width=\linewidth]{../lecture_notes/images/prob_geom1b.pdf}
     \end{column}
 \end{columns}
+\timetocode{}%
 \end{frame}
 
 \begin{frame}{The hidden variable trick}
@@ -1283,6 +1375,7 @@ where~$m_{ij}\in\C$ are generic coefficients, and $x$, $y$ and $z$ are unknowns.
 
 
 \begin{frame}{The hidden variable trick -- Example 1}
+
 The action matrix method is directly applicable, but
 the system is linear in $x$ and $y$, hence we may write it as
 \begin{equation*}\label{eq:specialnullvector}
@@ -1303,6 +1396,7 @@ where
     m_{32}z + m_{32} & m_{33}z + m_{34} & m_{35}z^2 + m_{36}z + m_{37}
 \end{bmatrix}\;.
 \end{equation*}
+\timetocode{}
 \end{frame}
 
 \begin{frame}{The hidden variable trick -- Example 1}
@@ -1322,11 +1416,15 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
 \item Closed-form solution available! No action matrix method necessary.
 \item The remaining parameters can be obtained using SVD.
 \end{itemize}
+\timetocode{}
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\def\hiddenvariableTwoeHeight{\vspace{4mm}}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         The scene plane $\pi$ and a camera's image plane $\pi'$ are related point-wise by the
         homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar, 
         $\mat{X}_i\in\pi$ and $\mat{x}'\in\pi'$. Let $\mat{X}_i$ and~$\mat{X}'_i$ be two points on the
@@ -1335,6 +1433,7 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
             \alpha_i\mat{x}_i' = \mat{PX}'_i = \mat{PTX}_i = \mat{PTP}^{-1}\mat{x}_i=\mat{H_ux}_i,
         \end{equation*}
         where the homography $\mat{H_u}=\mat{PTP}^{-1}$ is called a conjugate translation.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1344,9 +1443,11 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
 \end{columns}
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         We get
         \begin{equation*}
         \mat{H_u} \sim \mat{I}_3+s_i^{\mat{u}}\mat{ul}^\T,
@@ -1359,6 +1460,7 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
         \item and scalar $s_i^{\mat{u}}$ is the magnitude of translation in the direction $\mat{u}$ for
               the point correspondence $\mat{x}_i\leftrightarrow\mat{x}_i'$.
         \end{itemize}
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1371,12 +1473,15 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
 \begin{frame}{Radial Distortion}
 \begin{columns}
 \begin{column}{0.6\textwidth}
-Fitzgibbon (2001): The division model
-\begin{equation*}
-\mat{x}_i^u = f(\mat{x}_i,\lambda)% = \begin{bmatrix}x_i\\y_i\\w_i\end{bmatrix}
-= \begin{bmatrix}x_i\\y_i\\1+\alert{\lambda}\,(x_i^2+y_i^2)\end{bmatrix}\;.
-\end{equation*}
-Benefits: a single distortion parameter~$\alert{\lambda}$ yields good results.
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
+        Fitzgibbon (2001): The division model
+        \begin{equation*}
+        \mat{x}_i^u = f(\mat{x}_i,\lambda)% = \begin{bmatrix}x_i\\y_i\\w_i\end{bmatrix}
+        = \begin{bmatrix}x_i\\y_i\\1+\alert{\lambda}\,(x_i^2+y_i^2)\end{bmatrix}\;.
+        \end{equation*}
+        Benefits: a single distortion parameter~$\alert{\lambda}$ yields good results.
+        \end{minipage}
 \end{column}%
 \begin{column}{0.4\textwidth}
 \includegraphics[width=0.9\linewidth]{images/distortion.png}
@@ -1384,9 +1489,11 @@ Benefits: a single distortion parameter~$\alert{\lambda}$ yields good results.
 \end{columns}%
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         The problem:
         \begin{itemize}
             \item Add radial distortion,
@@ -1401,6 +1508,7 @@ We end up with
 per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0$.
         \end{itemize}
         Minimal solver: 3 points
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1410,14 +1518,17 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
 \end{columns}
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         Linear in~$\mat{u}$:
         \begin{equation*}
         \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)\begin{bmatrix} u_1 \\ u_2 \\ u_3 \\1\end{bmatrix} = 0
         \end{equation*}
         where $\mat{M} = \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)$ is a $7\times 4$ matrix.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1427,9 +1538,11 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
 \end{columns}
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         It turns out that
         the matrix has a special structure, namely
         \begin{equation*}\label{eq:pritts-M}
@@ -1443,6 +1556,7 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
         l_1 & l_2 &   1 & 0
         \end{bmatrix}\;.
         \end{equation*}
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1450,11 +1564,14 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
         {\scriptsize Image credit: Pritts~\etal{} (2018).}
     \end{column}
 \end{columns}
+\timetocode{}
 \end{frame}
 
-\begin{frame}{The hidden variable trick -- Example 2}
+\begin{frame}[t]{The hidden variable trick -- Example 2}
 \begin{columns}
     \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
         The matrix $\mat{M}$ is rank deficient $\Rightarrow$
         all $4\times 4$ minors must vanish.
 
@@ -1464,7 +1581,8 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
             \item 36 equations
         \end{itemize}
 
-    We will return to this problem later.
+        We will return to this problem later.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
         \centering
@@ -1518,7 +1636,7 @@ z^2 & zw^2 & z & xw & x & yw & y & w & 1\\
 \end{frame}
 
 \begin{frame}{Eliminating variables -- Example}
-From the above system, we note the following relations
+We get
 \begin{equation*}\label{paper04:eq:elim}
     \begin{aligned}
     z^2 + g_1(x,y,w)  &=  0,\\
@@ -1527,15 +1645,34 @@ From the above system, we note the following relations
     \end{aligned}
 \end{equation*}
 where~$g_i(x,y,w)$ are polynomials in the variables $x$, $y$ and~$w$.
-Consequently, we must enforce the relations
-\begin{equation}\label{paper04:eq:knowntilt1}
+Therefore
+\begin{equation*}\label{paper04:eq:knowntilt1}
 \begin{aligned}
     g_2(x,y,w) &= w^2 g_3(x,y,w), \\
     g_1(x,y,w) &= \left(g_3(x,y,w)\right)^2\;.
 \end{aligned}
-\end{equation}
-Now, we have a reduced system with three unknowns and three equations given
-by~\eqref{paper04:eq:knowntilt1} and the constraint $x^2+y^2=1$.
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Eliminating variables -- Example}
+\textbf{Comparison:}
+
+Before:
+\begin{itemize}
+    \item Four equations in four unknowns
+    \item Max degree two
+\end{itemize}
+
+After:
+\begin{itemize}
+    \item Three equations in three unknowns
+    \item Max degree four {\color{red}Note to self: Double check before workshop!}
+\end{itemize}
+
+\alert{Note:} Eliminating variables is often preferable, but there are cases when it is not.
+Hard to say how it affects the overall performance\ldots You simply have to test yourself!
+In such scenarios, it is nice to have an automatic generator for rapid prototyping.
+\timetocode{}
 \end{frame}
 
 \begin{frame}{Saturation}
@@ -1545,7 +1682,8 @@ When is saturation useful?
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Saturation}
+\begin{frame}{Saturation -- Example}
+
 \end{frame}
 
 \begin{frame}{Saturation}
@@ -1577,6 +1715,19 @@ Software
 \section{Group exercise}
 
 \begin{frame}{Warmup}
+\textbf{Fundamental matrix with known rotation}\\[8mm]
+For more info, see Example 8 and Example 11 from the lecture notes.
+The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
+\begin{equation*}
+\begin{aligned}
+    \mat{x}'_i\mat{F}\mat{x}_i &= 0, &i=1,\ldots,6\\
+    \det(\mat{E}) &= 0, &\\
+    2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
+\end{aligned}
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Warmup}
 \textbf{Relative pose with one calibrated camera and one with unknown focal length}\\[8mm]
 The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \begin{equation*}
@@ -1587,6 +1738,8 @@ The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \end{aligned}
 \end{equation*}
 \end{frame}
+
+\section{For your individual project}
 
 \begin{frame}{Problem 1}
 \begin{columns}
