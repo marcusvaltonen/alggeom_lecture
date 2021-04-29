@@ -128,7 +128,7 @@
 \usepackage{setspace}
 %\usepackage{xcolor}
 \usepackage{tikz}
-%\usetikzlibrary{tikzmark}
+\usetikzlibrary{tikzmark}
 \usepackage{pgfplots}
 
 %\usepackage{caption}
@@ -192,6 +192,7 @@
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows,shapes,shapes.symbols}
 \usetikzlibrary{arrows.meta}
+\usetikzlibrary{matrix, fit}
 \tikzset{%
   thick arrow/.style={
      -{Triangle[angle=90:2pt 1.5]},
@@ -200,6 +201,23 @@
      draw opacity=0.7,
   },
 }
+\tikzset{
+node distance = 9em and 4em,
+sloped,
+   box/.style = {%
+    shape=rectangle,
+    rounded corners,
+    draw=blue!40,
+    fill=blue!15,
+    align=center,
+    font=\fontsize{12}{12}\selectfont},
+ arrow/.style = {%
+    draw=blue!30,
+    line width=2mm,% <-- select desired width
+    -{Triangle[length=3mm]},
+    shorten >=1mm, shorten <=1mm,
+    font=\fontsize{8}{8}\selectfont},
+    }
 \pgfplotsset{compat=1.15}
 \usetikzlibrary{shapes.misc, positioning}
 \usetikzlibrary{arrows}
@@ -1426,7 +1444,7 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
         \begin{minipage}[t][\textheight][t]{\textwidth}
         \hiddenvariableTwoeHeight
         The scene plane $\pi$ and a camera's image plane $\pi'$ are related point-wise by the
-        homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar, 
+        homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar,
         $\mat{X}_i\in\pi$ and $\mat{x}'\in\pi'$. Let $\mat{X}_i$ and~$\mat{X}'_i$ be two points on the
         scene plane $\pi$ such that $\mat{X}'_i -\mat{X}_i=\mat{t}$. Then
         \begin{equation*}
@@ -1578,7 +1596,7 @@ per point correspondences and the orthogonality constraint~$\mat{l}^\T\mat{u}= 0
         There are $\binom{7}{4}=35$ minors. We have a problem with
         \begin{itemize}
             \item 4 unknowns
-            \item 36 equations
+            \item 35 equations
         \end{itemize}
 
         We will return to this problem later.
@@ -1679,14 +1697,258 @@ In such scenarios, it is nice to have an automatic generator for rapid prototypi
 When is saturation useful?
 \begin{itemize}
     \item To remove unwanted solutions!
+        \begin{itemize}
+            \item Physical (\eg{} focal length)
+            \item Artificial (\eg{} introduced during parameterization)
+        \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The Rabinowitsch trick}
+An alternative to saturation is the~\emph{Rabinowitsch trick}.
+\vfill
+\textbf{Comparison:} We want to exclude solutions~$f(\mat{x}) = 0$. Introduce auxiliary
+variable~$x_0$, then
+
+\emph{Rabinowitsh trick:} Add constraint~$x_0f(\mat{x})-1 = 0$
+
+\emph{Saturation:} Add constraint $x_0-f(\mat{x}) = 0$ and saturate $x_0$.
+
+\alert{Intuition:} Smaller elimination templates since the auxiliary variable $x_0$ is present
+in a monomial with lower degree.
+Furthermore, one may exclude the auxiliary variable~$x_0$ from the quotient ring basis
+(when saturating polynomials).
+
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \hiddenvariableTwoeHeight
+        Back to Pritts \etal{} (2018). Remember:
+        \begin{equation*}\label{eq:pritts-M}
+        \mat{M} = \begin{bmatrix}
+        m_{11} & m_{12} &      0 & m_{14} \\
+        m_{21} & m_{22} &      0 & m_{24} \\
+        m_{31} &      0 & m_{33} & m_{34} \\
+        m_{41} &      0 & m_{43} & m_{44} \\
+        m_{51} & m_{52} &      0 & m_{54} \\
+        m_{61} &      0 & m_{63} & m_{64} \\
+        l_1 & l_2 &   1 & 0
+        \end{bmatrix}\;.
+        \end{equation*}
+        $\mat{M}$ is rank deficient $\Rightarrow$
+        all $4\times 4$ minors must vanish.
+        Total: $\binom{7}{4}=35$ minors.
+
+        \begin{center}
+            \alert{Let's make a solver!}
+        \end{center}
+        \end{minipage}
+    \end{column}%
+    \begin{column}{0.5\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{images/conjugate_trans.png}
+        {\scriptsize Image credit: Pritts~\etal{} (2018).}
+    \end{column}
+\end{columns}
+\timetocode{}
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+We could not solve the previous problem. Macaulay2 cast an error
+saying:
+\begin{center}
+    \texttt{module given is not finite over the base}
+\end{center}
+
+This means that there are infinitely many solutions. Why? Physically it seems unreasonable,
+and if one goes back and creates a solver without using the hidden variable trick, we would
+\emph{not} get this error.
+
+\begin{itemize}
+    \item[$\Rightarrow$] The hidden variable trick introduced a one-dimensional family of
+                         spurious solutions!
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Saturation -- Example}
+We could not solve the previous problem. Macaulay2 cast an error
+saying:
+\begin{center}
+    \texttt{module given is not finite over the base}
+\end{center}
+
+This means that there are infinitely many solutions. Why? Physically it seems unreasonable,
+and if one goes back and creates a solver without using the hidden variable trick, we would
+\emph{not} get this error.
+
+\begin{itemize}
+    \item[$\Rightarrow$] The hidden variable trick introduced a one-dimensional family of
+                         spurious solutions!
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\textbf{Analysis:}
+
+Where were these solutions introduced?
+We used
+\begin{equation*}
+\mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)\begin{bmatrix} u_1 \\ u_2 \\ u_3 \\1\end{bmatrix} = 0
+\end{equation*}
+where $\mat{M} = \mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)$ is a $7\times 4$ matrix.
+
+Then we created the 35 equations from the minors.
 
 \end{frame}
 
-\begin{frame}{Saturation}
+\begin{frame}{Saturation -- Example}
+\textbf{Analysis:}
+
+The minors do not care about the structure of the null space!
+The one-dimensional family of spurious solutions corresponds to solutions
+of the form
+\begin{equation*}
+\mat{M}(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda)\begin{bmatrix} u_1 \\ u_2 \\ u_3 \\\alert{0} \end{bmatrix} = 0
+\end{equation*}
+which are unwanted.
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\textbf{Solution:}
+
+Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
+from the first three columns\ldots
+
+\begin{equation*}
+\vcenter{\hbox{
+\begin{tikzpicture}[ampersand replacement=\&]
+    \matrix[
+        matrix of math nodes,
+        row sep=0.65ex,
+        column sep=2ex,
+        left delimiter={[},right delimiter={]},
+        nodes={text width=1.2em, text height=0.75ex, text depth=.5ex, align=center}
+        ] (m)
+        {
+            m_{11} \& m_{12} \&      0 \& m_{14} \\
+            m_{21} \& m_{22} \&      0 \& m_{24} \\
+            m_{31} \&      0 \& m_{33} \& m_{34} \\
+            m_{41} \&      0 \& m_{43} \& m_{44} \\
+            m_{51} \& m_{52} \&      0 \& m_{54} \\
+            m_{61} \&      0 \& m_{63} \& m_{64} \\
+               l_1 \&    l_2 \&      1 \& 0      \\
+        };
+        \begin{scope}[on background layer]
+            \node[fit=(m-1-1)(m-3-3), draw=green!30, fill=green!30, rounded corners] {};
+        \end{scope}
+\end{tikzpicture}
+}}
+     \begin{bmatrix}
+        u_1 \\ u_2 \\ u_3 \\ 1
+    \end{bmatrix} = 0
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\textbf{Solution:}
+
+Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
+from the first three columns\ldots
+
+\begin{equation*}
+\vcenter{\hbox{
+\begin{tikzpicture}[ampersand replacement=\&]
+    \matrix[
+        matrix of math nodes,
+        row sep=0.65ex,
+        column sep=2ex,
+        left delimiter={[},right delimiter={]},
+        nodes={text width=1.2em, text height=0.75ex, text depth=.5ex, align=center}
+        ] (m)
+        {
+            m_{11} \& m_{12} \&      0 \& m_{14} \\
+            m_{21} \& m_{22} \&      0 \& m_{24} \\
+            m_{31} \&      0 \& m_{33} \& m_{34} \\
+            m_{41} \&      0 \& m_{43} \& m_{44} \\
+            m_{51} \& m_{52} \&      0 \& m_{54} \\
+            m_{61} \&      0 \& m_{63} \& m_{64} \\
+               l_1 \&    l_2 \&      1 \& 0      \\
+        };
+        \begin{scope}[on background layer]
+            \node[fit=(m-2-1)(m-2-3), draw=green!30, fill=green!30, rounded corners] {};
+            \node[fit=(m-4-1)(m-5-3), draw=green!30, fill=green!30, rounded corners] {};
+        \end{scope}
+\end{tikzpicture}
+}}
+     \begin{bmatrix}
+        u_1 \\ u_2 \\ u_3 \\ 1
+    \end{bmatrix} = 0
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\textbf{Solution:}
+
+Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
+from the first three columns\ldots \alert{but be smart!}
+
+\begin{equation*}
+\vcenter{\hbox{
+    \tikzmark{pos}
+\begin{tikzpicture}[ampersand replacement=\&]
+    \matrix[
+        matrix of math nodes,
+        row sep=0.65ex,
+        column sep=2ex,
+        left delimiter={[},right delimiter={]},
+        nodes={text width=1.2em, text height=0.75ex, text depth=.5ex, align=center}
+        ] (m)
+        {
+            m_{11} \& m_{12} \&      0 \& m_{14} \\
+            m_{21} \& m_{22} \&      0 \& m_{24} \\
+            m_{31} \&      0 \& m_{33} \& m_{34} \\
+            m_{41} \&      0 \& m_{43} \& m_{44} \\
+            m_{51} \& m_{52} \&      0 \& m_{54} \\
+            m_{61} \&      0 \& m_{63} \& m_{64} \\
+               l_1 \&    l_2 \&      1 \& 0      \\
+        };
+        \begin{scope}[on background layer]
+            \node[fit=(m-1-1)(m-2-3), draw=green!30, fill=green!30, rounded corners] {};
+            \node[fit=(m-7-1)(m-7-3), draw=green!30, fill=green!30, rounded corners] {};
+        \end{scope}
+\end{tikzpicture}
+}}
+     \begin{bmatrix}
+        u_1 \\ u_2 \\ u_3 \\ 1
+    \end{bmatrix} = 0
+\end{equation*}
+
+\begin{tikzpicture}[remember picture, overlay]
+\draw[arrow]   ($ (pic cs:pos) +(-22mm,10mm) $) to [bend left,looseness=1.2] node[above] {Second order equation!} ($ (pic cs:pos) +(0mm, 36mm) $);
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}{Saturation -- Example}
+\textbf{Solution:}
+
+Use saturation! The unwanted solutions can be excluded by saturating any $3\times 3$ minor
+from the first three columns\ldots \alert{but be smart!}
+\begin{equation*}
+    f_s =
+        \begin{vmatrix}
+        m_{11} & m_{12} & 0\\
+        m_{21} & m_{22} & 0\\
+        l_1 & l_2 &   1
+        \end{vmatrix}
+        =
+        m_{11}m_{22}-m_{12}m_{21}\;.
+\end{equation*}
+Add an auxiliary variable $x_{\text{aux}}$ $\Leftarrow$ $x_{\text{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$, and saturate $x_{\text{aux}}$.
+\timetocode{}
 \end{frame}
 
 \begin{frame}{A clever elimination strategy}
@@ -1714,7 +1976,7 @@ Software
 
 \section{Group exercise}
 
-\begin{frame}{Warmup}
+\begin{frame}{Group 1}
 \textbf{Fundamental matrix with known rotation}\\[8mm]
 For more info, see Example 8 and Example 11 from the lecture notes.
 The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
@@ -1727,7 +1989,7 @@ The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \end{equation*}
 \end{frame}
 
-\begin{frame}{Warmup}
+\begin{frame}{Group 2}
 \textbf{Relative pose with one calibrated camera and one with unknown focal length}\\[8mm]
 The fundamental matrix is~$\mat{E=FK}$, where $\mat{K}=\diag(f,\,f,\,1)$, and
 \begin{equation*}
