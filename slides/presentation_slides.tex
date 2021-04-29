@@ -2059,23 +2059,19 @@ Only the input data $\mat{x}_i$ and $\mat{x}_i'$ change!
         \theimportanceTwoHeight
         \textbf{Solver 3: Elimination strategy}
 
-        Generally $\nulldim(\mat{M})=4$, hence
-        \begin{equation}
+        Generally, $\nulldim(\mat{M})=4$, hence
+        \begin{equation*}
             \mat{H} = \sum_{i=1}^4\lambda_i\mat{H}_i\;.
-        \end{equation}
-        Note that there is a scale ambiguity, therefore we may lock the scale \eg{} by forcing \mbox{$\lambda_4=1$}.
-        Now, this corresponds to steps 3 and 4 of the online stage of the elimination strategy proposed by
-        Kukelova~\etal{}. We now use this parameterization of the three unknowns~$\lambda_i$, for $i=1,2,3$
-        and insert them in the generators (the eleven quartic equations). This yields a new system
-        \begin{equation}
+        \end{equation*}
+        Insert into
+        \begin{equation*}
         \begin{aligned}
             g_1(\lambda_1,\lambda_2,\lambda_3) &= 0, \\
             &\vdots \\
             g_{11}(\lambda_1,\lambda_2,\lambda_3) &= 0,
         \end{aligned}
-        \end{equation}
-        for which the action matrix method is applicable. We will return to this example during the lecture.
-
+        \end{equation*}
+        \alert{Note: } Due to scale ambiguity, let $\lambda_4=1$.
         \end{minipage}
     \end{column}%
     \begin{column}{0.5\textwidth}
