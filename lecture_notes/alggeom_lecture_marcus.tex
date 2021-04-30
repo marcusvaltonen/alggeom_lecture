@@ -85,6 +85,7 @@
 \DeclareMathOperator{\rank}{rank}
 \DeclareMathOperator{\lt}{LT}
 \DeclareMathOperator{\sat}{Sat}
+\DeclareMathOperator{\vectorize}{vec}
 \newcommand{\Rop}[1]{\mathcal{R}_{#1}}
 
 \makeatletter
@@ -613,7 +614,7 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$. Specifically, we have reduced the
 finding the roots of a quartic polynomial which has a closed-form solution, and is fast to compute.
 We do not need to resolve to other more complex methods such as the action matrix method.
 When the solutions to $z$ are found, we can extract $x$ and $y$ linearly, \eg{} by using SVD
-on $\mat{M}(z^*)$, for a solution $z^*$, and normalize the corresponding null vector to have
+on $\mat{M}(z^*)$, for a solution $z^*$, and normalize the corresponding null vector to have the
 last element equal to one.
 \end{example}
 
@@ -834,7 +835,7 @@ Nullstellensatz.},
 which is to introduce~$x_0f(\mat{x})-1 = 0$.
 We show in an example that using saturation produces smaller elimination
 templates.\footnote{Empirically, this is often true. One argument for why this is the case
-is because the auxiliary variable $x_0$ is present in a monomial with lower degree and therefore easier to eliminate.}
+is because the auxiliary variable $x_0$ is present in a monomial of lower degree and therefore easier to eliminate.}
 Furthermore, one may exclude the auxiliary variable~$x_0$ from the quotient ring basis
 (when saturating polynomials).
 
@@ -862,9 +863,8 @@ to the two first rows and the last row
 We add an auxiliary variable $x_{\te{aux}}$ and  the equation~$x_{\te{aux}}-f_s(l_1,l_2,\bar{s}_3^{\mat{u}},\lambda) = 0$. This gives us 36 equations in five unknowns. We will return to this example
 during the lecture.
 
-It turns out that the elimination template is of size~$22\times 24$.\footnote{Note that it is not
-the same as in the paper---we are using a slightly different approach. But, potentially, we have
-a better solver as the state-of-the-art solver in~\cite{pritts2017} is of size~$24\times 26$.}
+It turns out that the elimination template is of size~$22\times 24$.\footnote{Note that the size is not the same as in the original paper---we are using a slightly different approach. But, potentially, we have
+a better solver as the state-of-the-art solver in~\cite{pritts2017} uses an elimination template of size~$24\times 26$.}
 This assumes that we use a basis without the auxiliary variable. Using the Rabinowitsch trick,
 we instead get an elimination template of size $59\times 61$.
 \end{example}
@@ -892,7 +892,7 @@ on the input measurements while the singularity of the fundamental matrix result
 equation~$\det(F) = 0$, which does not depend on the measurements. Here we present a new ``clever''
 elimination strategy, which usually allows us to do more computation in the off-line stage and less
 computation in the online stage.
-Throughout this section we assume that the nonlinear equations~$F_N$ do not depend on image
+Throughout this section, we assume that the nonlinear equations~$F_N$ do not depend on image
 measurements, \ie{} for all instances these equations are the same.
 [\ldots]
 Let us now describe our new elimination strategy. We first divide the input equations~$F$ into the
@@ -955,10 +955,10 @@ in~\cite{wadenback2016}\footnote{
 These constraints were experimentally obtained by randomly generating points on the manifold defining
 the planar motion compatible homographies.
 In order to be able to work over a finite field, the rotation matrices were constructed
-using Pythagorean triplets, hence integer versions of the problem were obtained. By doing so,
+using Pythagorean triples, hence integer versions of the problem were obtained. By doing so,
 the coefficients for the polynomials could be found.
 With this approach, however, one cannot rule out the existence of higher-order polynomials,
-and thus, sufficiency cannot be proven.} and an additional sixth degree polynomial.
+and thus, sufficiency cannot be proven.} and an additional sixth-degree polynomial.
 
 Now, we parameterize the null space of the homography using 2.5-point correspondences, \ie{}
 given three corresponding points $\mat{x}_i \leftrightarrow \mat{x}'_i$ for $i=1,2,3$, we get
@@ -1017,11 +1017,11 @@ resultant-based methods are proposed. Major strengths compared to the action mat
 in terms of numerical stability.
 
 \subsection{What about large scale problems?}
-Gröbner basis methods only work well when the number of solutions are small---say less than one
+Gröbner basis methods only work well when the number of solutions is small---say less than one
 hundred solutions---since larger solvers suffer from numerical instability, due to large eliminations
 and eigenvalue problems. One way to approach larger problems is by using \emph{homotopy continuation} (HC). In computer vision, a famous problem with many solutions is the trifocal problem, \ie{} with
 three calibrated cameras. There are two common minimal problems for points and lines in three views
-with 216 and 312 solutions each. These are considerd in~\cite{fabbri-etal-cvpr-2020}, and they also
+with 216 and 312 solutions each. These are considered in~\cite{fabbri-etal-cvpr-2020}, and they also
 propose the C++ package called MINUS (MInimal problem NUmerical Solver), which is publicly available.\footnote{Code available at~\url{https://github.com/rfabbri/minus}.}
 
 \clearpage
