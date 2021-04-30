@@ -583,7 +583,7 @@ Only the input data $\mat{x}_i$ and $\mat{x}_i'$ change!
 \end{frame}
 
 \begin{frame}{The reality (cont.)}
-All non-degenearte instances of the same problem share the same characteristics:
+All non-degenerate instances of the same problem share the same characteristics:
 \begin{itemize}
 \item The same number of solutions,
 \item Gröbner basis the same (\wrt{} a monomial ordering, often GREVLEX)${}^*$,
@@ -662,7 +662,7 @@ where
 \begin{itemize}
 \item $\XB$ are the basis monomials,
 \item $\XR$ are the \emph{reducible} monomials,
-\item $\XE$~\emph{excessive} monomials.
+\item $\XE$ are the~\emph{excessive} monomials.
 \end{itemize}
 \end{frame}
 
@@ -788,7 +788,7 @@ which is what we were looking for.
             \end{bmatrix}
             = 0\;.
         \end{equation*}
-    Here $\XE = \{x^2,xy,x\}$, $\XR=\{y^2,y\}$ and $\XB=\{y,1\}$.
+    Here $\XE = \{x^2,xy,x\}$, $\XR=\{y^2\}$ and $\XB=\{y,1\}$.
     \end{column}%
     \begin{column}{0.3\textwidth}
         \centering
@@ -894,6 +894,8 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
 \vspace{3mm}
 \begin{columns}
     \begin{column}{0.7\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \vspace{4mm}
         We suspected that any instance could be written as
         \begin{equation*}
             p = \underbrace{c_0}_{=h_1}f_1 + \underbrace{(c_1x+c_2y+c_3)}_{=h_2}f_2,
@@ -906,6 +908,7 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
         Building an elimination template from these would have resulted in a larger system.
         We would get more coefficients, as well as augmenting with more equations, resulting in
         more than six monomials.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.3\textwidth}
         \centering
@@ -923,6 +926,8 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
 \vspace{3mm}
 \begin{columns}
     \begin{column}{0.7\textwidth}
+        \begin{minipage}[t][\textheight][t]{\textwidth}
+        \vspace{4mm}
         Utilizing syzygies, we may reduce
         \[
             h_1=-3x^2+xy-x+3 \;\text{and}\; h_2 = 3x^3+3xy^2+x-y+1
@@ -932,6 +937,7 @@ Let $p\in \langle f_1,\ldots f_t\rangle$, then
             \overline{(h_1,h_2)}^{G_\mathcal{S}}=(3,-3x-y+1)
         \]
         where $G_\mathcal{S}$ is the Gröbner basis for the syzygy module.
+        \end{minipage}
     \end{column}%
     \begin{column}{0.3\textwidth}
         \centering
