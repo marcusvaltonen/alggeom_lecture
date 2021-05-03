@@ -1432,9 +1432,12 @@ $
         \textbf{Solver 2: Re-parameterization}
 
         \begin{itemize}
-            \item We have replaced several multiplications with addition $\longrightarrow$ lower degree polynomials
+            \item We have replaced several multiplications with addition
+            \begin{itemize}
+                \item[$\longrightarrow$] lower degree polynomials.
+            \end{itemize}
             \item No need to introduce auxilliary variables---just use quaternion representation.
-            \item A single new constraint introduces, $\mat{t}\cdot\mat{n} = 0$.
+            \item A single new constraint introduced, $\mat{t}\cdot\mat{n} = 0$.
         \end{itemize}
         \end{minipage}
     \end{column}%
@@ -1506,7 +1509,7 @@ where
 \end{equation*}
 where $\alpha_i\in\C$ only depend on~$m_{ij}$.
 \item Closed-form solution available! No action matrix method necessary.
-\item The remaining parameters can be obtained using SVD.
+\item The remaining parameters can be obtained using SVD or QR decomposition.
 \end{itemize}
 \timetocode{}
 \end{frame}
@@ -1518,7 +1521,7 @@ where $\alpha_i\in\C$ only depend on~$m_{ij}$.
         \begin{minipage}[t][\textheight][t]{\textwidth}
         \hiddenvariableTwoeHeight
         The scene plane $\pi$ and a camera's image plane $\pi'$ are related point-wise by the
-        homography~$P$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar,
+        homography~$\mat{P}$, so that $\alpha_i\mat{x}'_i=\mat{PX}_i$, where $\alpha_i$ is a scalar,
         $\mat{X}_i\in\pi$ and $\mat{x}'\in\pi'$. Let $\mat{X}_i$ and~$\mat{X}'_i$ be two points on the
         scene plane $\pi$ such that $\mat{X}'_i -\mat{X}_i=\mat{t}$. Then
         \begin{equation*}
