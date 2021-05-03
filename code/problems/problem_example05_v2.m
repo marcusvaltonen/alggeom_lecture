@@ -1,8 +1,11 @@
-function [eqs,data0,eqs_data] = problem_example03_v2(data0)
+function [eqs,data0,eqs_data] = problem_example05_v2(data0)
+
+nbr_unknowns = 5+1;  % Five sought, one auxiliary
+nbr_generic_coeffs = 2*2*3;
 
 if nargin < 1 || isempty(data0)
     % no input, generate a random integer instance
-    data0 = randi(30, 2*2*3, 1);
+    data0 = randi(30, nbr_generic_coeffs, 1);
 end
 
 % Image correspondences (note: it is minimal with 2.5 pts)
@@ -33,6 +36,6 @@ eqs  = [eqs; t'*n];
 
 % Setup equation with data as additional unknowns
 if nargout == 3
-    xx = create_vars(5+1 + 2*2*3);
-    eqs_data = problem_example03_v2(xx(7:end));
+    xx = create_vars(nbr_unknowns + nbr_generic_coeffs);
+    eqs_data = problem_example05_v2(xx(nbr_unknowns+1:end));
 end

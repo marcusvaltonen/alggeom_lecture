@@ -1,15 +1,18 @@
-function [eqs,data0,eqs_data] = problem_example08(data0)
+function [eqs,data0,eqs_data] = problem_example14(data0)
+
+nbr_unknowns = 3;
+nbr_generic_coeffs = 9*4;
 
 if nargin < 1 || isempty(data0)
     % no input, generate a random integer instance
-    data0 = randi(30, 9*4, 1);
+    data0 = randi(30, nbr_generic_coeffs, 1);
 end
 
 % Step 4: Compute null space basis
 % Note: We lock the scale by letting one of the null space parameters
 % be equal to one.
 N = reshape(data0, 9, 4);
-xx = create_vars(3);
+xx = create_vars(nbr_unknowns);
 H = reshape(N * [xx; 1], 3, 3);
 
 x1 = H(1,1); x2 = H(2,1); x3 = H(3,1);
@@ -32,6 +35,6 @@ eqs = [...
 
 % Setup equation with data as additional unknowns
 if nargout == 3
-    xx = create_vars(3 + 9*4);
-    eqs_data = problem_example08(xx(4:end));
+    xx = create_vars(nbr_unknowns + nbr_generic_coeffs);
+    eqs_data = problem_example14(xx(nbr_unknowns+1:end));
 end
