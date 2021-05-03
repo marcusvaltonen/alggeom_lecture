@@ -43,7 +43,7 @@ P3 = [R3 t3];
 % Line constraint
 eqs = [];
 for k = 1:2
-    % Make all sub-determinant (minors) vanish
+    % Make all sub-determinants (minors) vanish
     A = [P1'*l1(:,k) P2'*l2(:,k) P3'*l3(:,k)];
     eqs = [eqs; det(A(1:3,:)); det(A([1 3 4],:)); det(A([2 3 4],:))];
 end
