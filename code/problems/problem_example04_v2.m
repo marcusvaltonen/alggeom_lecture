@@ -1,6 +1,6 @@
-function [eqs,data0,eqs_data] = problem_example04_v1(data0)
+function [eqs,data0,eqs_data] = problem_example04_v2(data0)
 
-nbr_unknowns = 10;
+nbr_unknowns = 6;
 nbr_generic_coeffs = 27;
 
 if nargin < 1 || isempty(data0)
@@ -26,12 +26,14 @@ xx = create_vars(nbr_unknowns);
 q2 = [xx(1); xx(2) * v];
 q3 = [xx(3); xx(4) * v];
 X = x1;
-t2 = xx(5:7);
-t3 = xx(8:10);
 
 % Rotation matrices (from unit quaternion)
 R2 = quat2rot(q2);
 R3 = quat2rot(q3);
+
+% Parameterize translations
+t2 = xx(5) * x2 - R2 * X;
+t3 = xx(6) * x3 - R3 * X;
 
 % Camera matrices
 P1 = [eye(3) zeros(3, 1)];
@@ -47,8 +49,9 @@ for k = 1:2
 end
 
 % Point constraints (the first is trivially fulfilled)
-eqs = [eqs; cross(x2, P2*[X;1])];
-eqs = [eqs; cross(x3, P3*[X;1])];
+% NOTE: Reduntant when parameterizing the translations
+% eqs = [eqs; cross(x2, P2*[X;1])];
+% eqs = [eqs; cross(x3, P3*[X;1])];
 
 % Enforce unit quaternions
 eqs = [eqs; q2' * q2 - 1; q3' * q3 - 1];
@@ -56,5 +59,5 @@ eqs = [eqs; q2' * q2 - 1; q3' * q3 - 1];
 % Setup equation with data as additional unknowns
 if nargout == 3
     xx = create_vars(nbr_unknowns + nbr_generic_coeffs);
-    eqs_data = problem_example04_v1(xx(nbr_unknowns+1:end));
+    eqs_data = problem_example04_v2(xx(nbr_unknowns+1:end));
 end
