@@ -1016,6 +1016,64 @@ defined as
 \timetocode{}
 \end{frame}
 
+\begin{frame}[t]{Code example in MATLAB}
+\vspace{1cm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        The automatic generator used the following elimination template
+        \begin{equation*}
+            \begin{bmatrix}
+                1 &&&1&&-1 \\
+                &1&&a&&b\\
+                &&1&&b&a \\
+                1&a&b\\
+            \end{bmatrix}
+            \begin{bmatrix}
+                x^2 \\ xy \\ x \\ y^2 \\ 1 \\ y
+            \end{bmatrix}
+            = 0\;.
+        \end{equation*}
+    Here $\XE = \{x^2,xy,x\}$, $\XR=\{y^2\}$ and $\XB=\{y,1\}$.
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\timetocode{}
+\end{frame}
+
+\begin{frame}{Code example in MATLAB}
+\vspace{3mm}
+\begin{columns}
+    \begin{column}{0.7\textwidth}
+        We saw one common error: \texttt{TODO: Extract remaining variables.}
+        \begin{itemize}
+            \item The automatic method for extracting the solutions from the eigenvectors failed.
+            \item Easy to fix in our case.
+        \end{itemize}
+        Another common error is: \texttt{TODO: Normalize eigenvectors.}
+        \begin{itemize}
+            \item We had 1 in our bases.
+            \item If you don't, then you might have to figure it out yourself. Often simple.
+        \end{itemize}
+    \end{column}%
+    \begin{column}{0.3\textwidth}
+        \centering
+        \includestandalone[width=\linewidth]{tikz/line_circle}
+
+        \vspace{5mm}
+
+        {\scriptsize From Viktor Larsson's PhD thesis (p. 37--38, 46--47)}
+    \end{column}
+\end{columns}
+\timetocode{}
+\end{frame}
+
 \def\theimportanceOneHeight{\vspace{4mm}}
 \section{Applications}
 \begin{frame}[t]{The importance of parameterization}
