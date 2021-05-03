@@ -16,8 +16,8 @@ end
 
 
 %% Run generator
-solv_name = 'example08';
-problem = @problem_example08;
+solv_name = 'example11';
+problem = @problem_example11;
 opt = default_options();
 
 
@@ -30,6 +30,8 @@ opt.M2_path = '/usr/bin/M2';
 % if you are not able to mex the file, you can instead use the option
 % opt.fast_monomial_extraction = 0;
 
+%opt.saturate_mon = 5;
+%opt.M2_weights = [0 0 0 0 1];
 solv = generate_solver(solv_name,problem,opt)
 
 %% Test solver

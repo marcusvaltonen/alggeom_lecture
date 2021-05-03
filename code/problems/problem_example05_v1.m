@@ -1,4 +1,4 @@
-function [eqs,data0,eqs_data] = problem_example05(data0)
+function [eqs,data0,eqs_data] = problem_example05_v1(data0)
 
 nbr_unknowns = 5+3;  % Five sought, three auxiliary
 nbr_generic_coeffs = 2*2*3;
@@ -53,5 +53,5 @@ eqs  = [eqs; cx^2+sx^2-1; cy^2+sy^2-1; cz^2+sz^2-1];
 % Setup equation with data as additional unknowns
 if nargout == 3
     xx = create_vars(nbr_unknowns + nbr_generic_coeffs);
-    eqs_data = problem_example05(xx(nbr_generic_coeffs+1:end));
+    eqs_data = problem_example05_v1(xx(nbr_generic_coeffs+1:end));
 end

@@ -1,4 +1,4 @@
-function [eqs,data0,eqs_data] = problem_example10(data0)
+function [eqs,data0,eqs_data] = problem_example10_v1(data0)
 
 nbr_unknowns = 4;
 nbr_generic_coeffs = 3*9;
@@ -22,5 +22,5 @@ eqs = [eqs; x^2 + y^2 - 1];
 % Setup equation with data as additional unknowns
 if nargout == 3
     xx = create_vars(nbr_unknowns + nbr_generic_coeffs);
-    eqs_data = problem_example10(xx(nbr_unknowns+1:end));
+    eqs_data = problem_example10_v1(xx(nbr_unknowns+1:end));
 end

@@ -16,13 +16,9 @@ end
 
 
 %% Run generator
-solv_name = 'example07_v2';
-problem = @problem_example07_v2;
+solv_name = 'example07';
+problem = @problem_example07;
 opt = default_options();
-
-% 14 sols
-% v1: [45, 59]
-% v2: [31, 45]
 
 % if Macaulay2 is not runnable as M2 on your system, update this
 opt.M2_path = '/usr/bin/M2';
@@ -36,7 +32,7 @@ opt.M2_path = '/usr/bin/M2';
 %opt.force_vars_in_reducibles = 1;
 
 
-solv = generate_solver(solv_name,problem,opt)
+%solv = generate_solver(solv_name,problem,opt)
 
 %% Test solver
 

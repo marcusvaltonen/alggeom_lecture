@@ -1,3 +1,5 @@
+
+
 clear
 
 addpath problems
@@ -6,48 +8,43 @@ addpath(genpath('generator'))
 % add path to multipol, https://github.com/LundUniversityComputerVision/multipol
 addpath multipol
 
-% if the folder 'solvers' doesn't exist, mkdir solvers
+% if the folder 'solvers' doesn't exist, mkdir solvers 
 if ~exist('solvers','dir')
     mkdir('solvers');
 end
 
+
+
 %% Run generator
-approach = 1;
-switch approach
-    case 1
-        solv_name = 'example04_v1';
-        problem = @problem_example04_v1;
-    case 2
-        solv_name = 'example04_v2';
-        problem = @problem_example04_v2;        
-    case 3
-        solv_name = 'example04_v3';
-        problem = @problem_example04_v3;
-    case 4
-        solv_name = 'example04_v4';
-        problem = @problem_example04_v4;             
-    otherwise
-        error('Choose approach 1-4.')
-end
-
+solv_name = 'example12';
+problem = @problem_example12;
 opt = default_options();
-opt.use_sym = 0;
 
-% If Macaulay2 is not runnable as M2 on your system, update this
+
+% if Macaulay2 is not runnable as M2 on your system, update this
 opt.M2_path = '/usr/bin/M2';
-
-% For C++ generation
-% opt.cg_language = 'cpp_eigen';
-% opt.cg_eigen_dir = '/usr/include/eigen3';
+%opt.cg_language = 'cpp_eigen';
+%opt.cg_eigen_dir = '/usr/include/eigen3';
 
 % Make sure extract_monomials.cpp in generator is mex'ed
 % if you are not able to mex the file, you can instead use the option
 % opt.fast_monomial_extraction = 0;
 
-% Generate solver
+opt.saturate_mon = 5;
+opt.M2_weights = [0 0 0 0 1];
+%opt.variable_order = [1 2 4 3 5];
+%basis = zeros(5, 2);
+%basis(3, 2) = 1;
+%opt.custom_basis = basis;
+%opt.actmon = 1;
+
+%x2 = zeros(5, 1);
+%x2(2) = 1;
+%opt.extra_reducible = x2;
 solv = generate_solver(solv_name,problem,opt)
 
 %% Test solver
+
 addpath solvers
 rehash
 disp('Now benchmarking')

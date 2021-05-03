@@ -1,5 +1,6 @@
 function [eqs,data0,eqs_data] = problem_example07(data0)
 
+use_hidden_variable = true;
 nbr_unknowns = 3;
 nbr_generic_coeffs = 3*7;
 
@@ -16,13 +17,25 @@ y = xx(2);
 z = xx(3);
 eqs = C * [x*z x y*z y z^2 z 1]';
 
-% Uncomment to use hidden variable trick
+% Use hidden variable trick
 % NOTE: The automatic solver does not solve single variable polynomials.
-% Write your own routine and use roots (c.f. solver_example07.m)
-%
-% M = collect_terms(eqs, [x y 1]');
-% eqs2 = det(M);
-% disp(char(eqs2,0))
+% Write your own routine and use roots (c.f. solver_example07_v2.m)
+
+if use_hidden_variable
+    M = collect_terms(eqs, [x y 1]');
+    eqs_hv = det(M);
+    cfs = collect_terms(eqs_hv, [z^4 z^3 z^2 z 1]);
+
+    % This removes the nbr_unknowns and makes the coefficients MATLAB
+    % compatible.
+    for i = 1:5
+        tmp = char(cfs(i), 0);
+        for j = nbr_generic_coeffs+nbr_unknowns:-1:1
+            tmp = strrep(tmp, ['x', num2str(j), ''], ['x(', num2str(j-nbr_unknowns), ')']);
+        end
+        fprintf(1, "cfs(%d) = %s;\n", i, tmp)
+    end
+end
 
 % Setup equation with data as additional unknowns
 if nargout == 3

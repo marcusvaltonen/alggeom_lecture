@@ -12,8 +12,18 @@ if ~exist('solvers','dir')
 end
 
 %% Run generator
-solv_name = 'example05';
-problem = @problem_example05;
+approach = 2;
+switch approach
+    case 1
+        solv_name = 'example05_v1';
+        problem = @problem_example05_v1;
+    case 2
+        solv_name = 'example05_v2';
+        problem = @problem_example05_v2;                   
+    otherwise
+        error('Choose approach 1 or 2.')
+end
+
 opt = default_options();
 
 % If Macaulay2 is not runnable as M2 on your system, update this
