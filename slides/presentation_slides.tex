@@ -1108,11 +1108,11 @@ defined as
         Choose a coordinate s.t.\@~$\mat{v}=(0,\,1,\,0)$.\\[5mm]
         Line constraints:
         \[
-            \det\!\left(\begin{bmatrix}
-                    \mat{\ell}_{1k} &
-                    \mat{R}_2^\T\mat{\ell}_{2k} &
-                    \mat{R}_3^\T\mat{\ell}_{3k}
-                \end{bmatrix}\right) = 0,
+            \rank\!\left(\begin{bmatrix}
+                    \mat{P}_1^\T\mat{\ell}_{1k} &
+                    \mat{P}_2^\T\mat{\ell}_{2k} &
+                    \mat{P}_3^\T\mat{\ell}_{3k}
+                \end{bmatrix}\right) = 2,
         \quad k = 1,\,2\;.
         \]
         Point constraint:
@@ -1137,7 +1137,6 @@ defined as
         \textbf{Solver 1: Naive approach}
 
         \begin{itemize}
-            \item Fix scale using $\lambda_1 = 1$, then $\mat{x}_1=\bar{\mat{X}}$, where $\bar{\mat{X}}$ is the inhomogeneous representation of $\mat{X}\in\P^3$.
             \item Get rid of the scale parameter
             \[
                 \mat{x}_k \times \mat{P}_k\mat{X} = 0,  \quad k=1,\,2,\, 3\;.
@@ -1170,7 +1169,7 @@ defined as
             \[
                 \mat{t}_k = \lambda_k\mat{x}_k-\mat{R}_k\mat{x}_1,
             \]
-            where $\lambda_1$ and $\lambda_2$ are unknown.
+            where $\lambda_2$ and $\lambda_3$ are unknown.
         \end{itemize}
 
         \end{minipage}
@@ -1196,6 +1195,15 @@ defined as
         \item Use a two-step solver in which $\theta_2$ and $\theta_3$ are solved for
         using the determinant constriant.
         \end{itemize}
+        Line constraints:
+        \[
+            \det\!\left(\begin{bmatrix}
+                    \mat{\ell}_{1k} &
+                    \mat{R}_2^\T\mat{\ell}_{2k} &
+                    \mat{R}_3^\T\mat{\ell}_{3k}
+                \end{bmatrix}\right) = 0,
+        \quad k = 1,\,2\;.
+        \]
 
         \end{minipage}
     \end{column}%
