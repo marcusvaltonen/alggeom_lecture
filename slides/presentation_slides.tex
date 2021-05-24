@@ -401,7 +401,7 @@ How does this help us solve the original system?
 $\quad\longrightarrow\quad$ We can compute a Gröbner basis efficiently using~\emph{Buchberger's algorithm}.
 \end{frame}
 
-\begin{frame}{Recap: The action matric method}
+\begin{frame}{Recap: The action matrix method}
 Assume zero-dimensional ideals, \ie{} finitely many solutions to the original system.
 \begin{itemize}
 \item Define the \emph{coset} $[f] \coloneqq \{f+h\;|\;h\in I\}$.
@@ -414,7 +414,7 @@ represented using a matrix~$\mat{M}_\alpha$. This is the \emph{action matrix}.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Recap: The action matric method (cont.)}
+\begin{frame}{Recap: The action matrix method (cont.)}
 Select a monomial basis $\mathcal{B}=\{[\mat{x}^{\beta_i}]\}_{i=1}^K$ for~$\C[\mat{x}] / I$.
 Then
 \begin{equation*}
@@ -449,7 +449,7 @@ We are often interested in solving generic problem instances, \eg{} the relative
 problem
 \begin{equation*}
 \begin{aligned}
-    \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
+    {\mat{x}'_i}^T\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
     \det(\mat{E}) &= 0, &\\
     2\mat{EE}^\T\mat{E}- \tr(\mat{EE}^\T)\mat{E} &= 0, &
 \end{aligned}
@@ -2068,7 +2068,7 @@ and epipolar constraint generates linear equations that depend
             {%
             $
             \begin{aligned}
-                \mat{x}'_i\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
+                {\mat{x}'_i}^T\mat{E}\mat{x}_i &= 0, &i=1,\ldots,5\\
                 \det(\mat{E}) &= 0,\\
                 2\mat{EE}^\T\mat{E} - \tr(\mat{EE}^\T)\mat{E} &= 0,
             \end{aligned}
@@ -2194,7 +2194,7 @@ Theory
 \end{itemize}
 Software
 \begin{itemize}
-    \item Generate in C++ and use fast solvers.
+    \item Generate in C++ and use fast eigenvalue solvers (Danilevsky, Sturm sequences, etc.\@)
 \end{itemize}
 \end{frame}
 
