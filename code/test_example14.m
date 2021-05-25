@@ -16,8 +16,8 @@ end
 
 
 %% Run generator
-solv_name = 'example11';
-problem = @problem_example11;
+solv_name = 'example14';
+problem = @problem_example14;
 opt = default_options();
 
 
