@@ -8,8 +8,10 @@ AM = RR(AM_ind,:);
 V = V ./ (ones(size(V,1),1)*V(1,:));
 sols(2,:) = diag(D).';
 
-% This line was added manually
-sols(1,:) = - data(1) * sols(2,:) - data(2);
+% Extract remaining variables (This you have to do manually for this case)
+a = data(1);
+b = data(2);
+sols(1,:) = - a * sols(2,:) - b;
 
 % Action =  y
 % Quotient ring basis (V) = 1,y,
